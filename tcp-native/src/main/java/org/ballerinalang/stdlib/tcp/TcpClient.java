@@ -131,8 +131,14 @@ public class TcpClient {
 
     public void readData(long readTimeout, Future callback) throws InterruptedException {
         if (channel.isActive()) {
-            channel.pipeline().addFirst(Constants.READ_TIMEOUT_HANDLER, new IdleStateHandler(readTimeout, 0, 0,
-                    TimeUnit.MILLISECONDS));
+            SslHandler sslHandler = (SslHandler) channel.pipeline().get(Constants.SSL_HANDLER);
+            if (sslHandler != null) {
+                channel.pipeline().addAfter(Constants.SSL_HANDLER, Constants.READ_TIMEOUT_HANDLER,
+                        new IdleStateHandler(readTimeout, 0, 0, TimeUnit.MILLISECONDS));
+            } else {
+                channel.pipeline().addFirst(Constants.READ_TIMEOUT_HANDLER, new IdleStateHandler(readTimeout, 0, 0,
+                        TimeUnit.MILLISECONDS));
+            }
             TcpClientHandler handler = (TcpClientHandler) channel.pipeline().get(Constants.CLIENT_HANDLER);
             handler.setCallback(callback);
             channel.read();
