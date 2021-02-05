@@ -1,7 +1,7 @@
 import ballerina/test;
 import ballerina/io;
 
-@test:Config {dependsOn: [testSecureClientEcho]}
+@test:Config {dependsOn: [testCiphers]}
 function testSecureListenerWithSecureClient() returns @tainted error? {
     Client socketClient = check new ("localhost", PORT4, secureSocket = {
         certificate: {path: certPath},
