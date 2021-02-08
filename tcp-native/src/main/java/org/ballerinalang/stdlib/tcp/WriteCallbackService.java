@@ -40,6 +40,7 @@ public class WriteCallbackService {
                 }
             });
             writeCalled = true;
+            Utils.println("INVOKE WRITE");
         }
     }
 
