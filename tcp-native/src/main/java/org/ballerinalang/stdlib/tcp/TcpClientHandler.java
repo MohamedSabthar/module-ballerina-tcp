@@ -24,6 +24,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleStateEvent;
 
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 
 /**
@@ -45,9 +46,14 @@ public class TcpClientHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, ByteBuf msg) throws Exception {
-        ctx.channel().pipeline().remove(Constants.READ_TIMEOUT_HANDLER);
+        Utils.println("HIT CHANNEL_READ0 `channelRead0(" + msg.toString(StandardCharsets.UTF_8) + ")`");
+        if (ctx.channel().pipeline().get(Constants.READ_TIMEOUT_HANDLER) != null) {
+            ctx.channel().pipeline().remove(Constants.READ_TIMEOUT_HANDLER);
+        }
         if (callback != null) {
             callback.complete(Utils.returnReadOnlyBytes(msg));
+        } else {
+            Utils.println("CALLBACK VALUE IN CHANNEL_READ0 IS NULL");
         }
     }
 

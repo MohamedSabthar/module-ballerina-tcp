@@ -113,6 +113,7 @@ public class TcpClient {
             sslHandler.engine().setEnabledCipherSuites(ciphers);
         }
         channel.pipeline().addFirst(Constants.SSL_HANDLER, sslHandler);
+        Utils.println("ADD SSL_HANDLER TO TCP CLIENT");
     }
 
     public void writeData(byte[] bytes, Future callback) throws InterruptedException {
@@ -131,10 +132,12 @@ public class TcpClient {
 
     public void readData(long readTimeout, Future callback) throws InterruptedException {
         if (channel.isActive()) {
+            Utils.println("ADD READ_TIMEOUT_HANDLER BEFORE READ OPERATION");
             channel.pipeline().addFirst(Constants.READ_TIMEOUT_HANDLER, new IdleStateHandler(readTimeout, 0, 0,
                     TimeUnit.MILLISECONDS));
             TcpClientHandler handler = (TcpClientHandler) channel.pipeline().get(Constants.CLIENT_HANDLER);
             handler.setCallback(callback);
+            Utils.println("INVOKE CHANNEL_READ `channel.read()`");
             channel.read();
         } else {
             callback.complete(Utils.createSocketError("Socket connection already closed."));

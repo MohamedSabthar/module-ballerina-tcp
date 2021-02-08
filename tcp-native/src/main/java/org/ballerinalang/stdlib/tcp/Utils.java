@@ -27,6 +27,8 @@ import io.ballerina.runtime.api.values.BArray;
 import io.ballerina.runtime.api.values.BError;
 import io.netty.buffer.ByteBuf;
 
+import java.io.PrintStream;
+
 import static org.ballerinalang.stdlib.tcp.Constants.ErrorType.GenericError;
 
 /**
@@ -87,5 +89,10 @@ public class Utils {
 
     public static Module getModule() {
         return tcpModule;
+    }
+
+    public static void println(String data) {
+        PrintStream console = System.out;
+        console.println(data);
     }
 }
