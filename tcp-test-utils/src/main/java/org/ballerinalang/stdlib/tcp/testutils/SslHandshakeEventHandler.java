@@ -12,6 +12,8 @@ class SslHandshakeEventHandler extends ChannelInboundHandlerAdapter {
                 ctx.pipeline().addLast(new SecureServerHandler());
                 ctx.pipeline().remove(this);
             }
+        } else {
+            ctx.close();
         }
     }
 
