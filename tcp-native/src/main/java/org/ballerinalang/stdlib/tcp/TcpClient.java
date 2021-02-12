@@ -78,15 +78,15 @@ public class TcpClient {
                     if (channelFuture.isSuccess()) {
                         channelFuture.channel().config().setAutoRead(false);
                         channel = channelFuture.channel();
-                        if (secureSocket == null) {
-                            callback.complete(null);
-                        } else {
-                            // test
-                            SslHandler sslHandler = (SslHandler) channel.pipeline().get(Constants.SSL_HANDLER);
-                            if (sslHandler == null) {
-                                PrintStream console = System.out;
+                        SslHandler sslHandler = (SslHandler) channel.pipeline().get(Constants.SSL_HANDLER);
+                        if (sslHandler == null) {
+                            PrintStream console = System.out;
+                            if (secureSocket != null) {
                                 console.println("*******************This can't happen************************");
                             }
+                        }
+                        if (secureSocket == null) {
+                            callback.complete(null);
                         }
                     } else {
                         callback.complete(Utils.createSocketError("Unable to connect with remote host: "
