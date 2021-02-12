@@ -37,6 +37,7 @@ import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 
 import java.io.File;
+import java.io.PrintStream;
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
@@ -79,6 +80,13 @@ public class TcpClient {
                         channel = channelFuture.channel();
                         if (secureSocket == null) {
                             callback.complete(null);
+                        } else {
+                            // test
+                            SslHandler sslHandler = (SslHandler) channel.pipeline().get(Constants.SSL_HANDLER);
+                            if (sslHandler == null) {
+                                PrintStream console = System.out;
+                                console.println("*******************This can't happen************************");
+                            }
                         }
                     } else {
                         callback.complete(Utils.createSocketError("Unable to connect with remote host: "
