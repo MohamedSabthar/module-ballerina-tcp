@@ -26,6 +26,7 @@ public class TestUtils {
     public static Object startSecureServer() {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         secureServer = new SecureServer();
+        System.out.println("***************************Execute server***************************");
         executor.execute(secureServer);
         return null;
     }

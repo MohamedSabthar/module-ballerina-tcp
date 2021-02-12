@@ -11,6 +11,7 @@ class SslHandshakeEventHandler extends ChannelInboundHandlerAdapter {
             if (((SslHandshakeCompletionEvent) evt).isSuccess()) {
                 ctx.pipeline().addLast(new SecureServerHandler());
                 ctx.pipeline().remove(this);
+                System.out.println("Handshake success" + ctx.channel().remoteAddress());
             }
         } else {
             ctx.close();

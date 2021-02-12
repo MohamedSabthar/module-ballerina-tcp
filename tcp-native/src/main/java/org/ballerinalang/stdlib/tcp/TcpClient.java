@@ -110,7 +110,7 @@ public class TcpClient {
                 .getStringValue(StringUtils.fromString(Constants.CERTIFICATE_PATH)).getValue()));
         SslContext sslContext = sslContextBuilder.build();
         SslHandler sslHandler = sslContext.newHandler(channel.alloc());
-
+//        sslHandler.setHandshakeTimeoutMillis(100);
         if (protocolVersions.length > 0) {
             sslHandler.engine().setEnabledProtocols(protocolVersions);
         }

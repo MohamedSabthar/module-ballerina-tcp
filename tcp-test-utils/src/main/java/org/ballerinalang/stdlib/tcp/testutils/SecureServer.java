@@ -47,6 +47,7 @@ public class SecureServer implements Runnable {
                             handler.engine().setEnabledCipherSuites(new String[]{"TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA"});
                             ch.pipeline().addFirst(handler);
                             ch.pipeline().addLast(new SslHandshakeEventHandler());
+                            System.out.println("***************************channel init triggered***************************");
                         }
 
                         @Override

@@ -27,7 +27,6 @@ import org.ballerinalang.stdlib.tcp.Constants;
 import org.ballerinalang.stdlib.tcp.Dispatcher;
 import org.ballerinalang.stdlib.tcp.TcpListener;
 import org.ballerinalang.stdlib.tcp.TcpService;
-import org.ballerinalang.stdlib.tcp.Utils;
 
 /**
  * Native implementation of TCP caller.
@@ -49,12 +48,10 @@ public class Caller {
         Channel channel = (Channel) caller.getNativeData(Constants.CHANNEL);
         TcpService tcpService = (TcpService) caller.getNativeData(Constants.SERVICE);
         tcpService.setIsCallerClosed(true);
-        try {
-            TcpListener.close(channel, callback);
-            Dispatcher.invokeOnClose(tcpService);
-        } catch (Exception e) {
-            callback.complete(Utils.createSocketError(e.getMessage()));
-        }
+
+        TcpListener.close(channel, callback);
+        Dispatcher.invokeOnClose(tcpService);
+
         return null;
     }
 }
