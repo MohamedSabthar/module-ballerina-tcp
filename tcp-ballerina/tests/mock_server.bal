@@ -101,18 +101,18 @@ service class closeService {
     }
 }
 
-service on new Listener(PORT4, secureSocket = {
-    certificate: {path: certPath},
-    privateKey: {path: keyPath},
-    protocol: {
-        name: "TLS",
-        versions: ["TLSv1.2", "TLSv1.1"]
-    },
-    ciphers: ["TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA"]
-}) {
+// service on new Listener(PORT4, secureSocket = {
+//     certificate: {path: certPath},
+//     privateKey: {path: keyPath},
+//     protocol: {
+//         name: "TLS",
+//         versions: ["TLSv1.2", "TLSv1.1"]
+//     },
+//     ciphers: ["TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA"]
+// }) {
 
-    isolated remote function onConnect(Caller caller) returns ConnectionService {
-        io:println("Client connected to secureEchoServer: ", caller.remotePort);
-        return new EchoService(caller);
-    }
-}
+//     isolated remote function onConnect(Caller caller) returns ConnectionService {
+//         io:println("Client connected to secureEchoServer: ", caller.remotePort);
+//         return new EchoService(caller);
+//     }
+// }
