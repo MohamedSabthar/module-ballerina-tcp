@@ -17,18 +17,14 @@ class SslHandshakeEventHandler extends ChannelInboundHandlerAdapter {
                 ctx.pipeline().addLast(new SecureServerHandler());
                 ctx.pipeline().remove(this);
             } else {
-                System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-                ((SslHandshakeCompletionEvent) evt).cause().printStackTrace();
-                System.out.println("-----------------------------------------------------------------");
+                ((SslHandshakeCompletionEvent) evt).cause().printStackTrace();        
             }
         }
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
         cause.printStackTrace();
-        System.out.println("-----------------------------------------------------------------");
         ctx.close();
     }
 }
