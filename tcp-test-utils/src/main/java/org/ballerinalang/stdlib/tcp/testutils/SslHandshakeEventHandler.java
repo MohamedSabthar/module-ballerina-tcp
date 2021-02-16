@@ -5,6 +5,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.ssl.SslHandshakeCompletionEvent;
 
 class SslHandshakeEventHandler extends ChannelInboundHandlerAdapter {
+
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         System.out.println(ctx.channel().remoteAddress());
@@ -16,8 +17,6 @@ class SslHandshakeEventHandler extends ChannelInboundHandlerAdapter {
             if (((SslHandshakeCompletionEvent) evt).isSuccess()) {
                 ctx.pipeline().addLast(new SecureServerHandler());
                 ctx.pipeline().remove(this);
-            } else {
-                ((SslHandshakeCompletionEvent) evt).cause().printStackTrace();        
             }
         }
     }
