@@ -6,6 +6,11 @@ import io.netty.handler.ssl.SslHandshakeCompletionEvent;
 
 class SslHandshakeEventHandler extends ChannelInboundHandlerAdapter {
     @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        System.out.println(ctx.channel().remoteAddress());
+    }
+
+    @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof SslHandshakeCompletionEvent) {
             if (((SslHandshakeCompletionEvent) evt).isSuccess()) {
