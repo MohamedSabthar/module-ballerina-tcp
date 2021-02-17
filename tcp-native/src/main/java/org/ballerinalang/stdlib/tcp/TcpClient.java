@@ -34,6 +34,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslHandler;
+import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.timeout.IdleStateHandler;
 
 import java.io.File;
@@ -97,7 +98,7 @@ public class TcpClient {
                 fromString(Constants.PROTOCOL_VERSIONS)).getStringArray();
         String[] ciphers = secureSocket.getArrayValue(StringUtils.fromString(Constants.CIPHERS)).getStringArray();
 
-        SslContextBuilder sslContextBuilder = SslContextBuilder.forClient();
+        SslContextBuilder sslContextBuilder = SslContextBuilder.forClient().sslProvider(SslProvider.OPENSSL);
         sslContextBuilder.trustManager(new File(certificate
                 .getStringValue(StringUtils.fromString(Constants.CERTIFICATE_PATH)).getValue()));
         SslContext sslContext = sslContextBuilder.build();

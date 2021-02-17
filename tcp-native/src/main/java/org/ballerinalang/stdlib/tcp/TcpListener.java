@@ -34,6 +34,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslHandler;
+import io.netty.handler.ssl.SslProvider;
 
 import java.io.File;
 import java.io.IOException;
@@ -99,6 +100,7 @@ public class TcpListener {
         SslContext sslContext = SslContextBuilder.forServer(
                 new File(certificate.getStringValue(StringUtils.fromString(Constants.CERTIFICATE_PATH)).getValue()),
                 new File(privateKey.getStringValue(StringUtils.fromString(Constants.PRIVATE_KEY_PATH)).getValue()))
+                .sslProvider(SslProvider.OPENSSL)
                 .build();
 
         SslHandler sslHandler = sslContext.newHandler(channel.alloc());

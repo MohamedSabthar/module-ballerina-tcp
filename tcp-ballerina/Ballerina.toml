@@ -51,3 +51,9 @@ artifactId = "netty-resolver"
 version = "@netty.version@"
 path = "./build/libs/netty-codec-@netty.version@.jar"
 groupId = "io.netty"
+
+[[platform.java11.dependency]]
+artifactId = "netty-tcnative-boringssl-static"
+version = "@tcnative.version@"
+path = "./build/libs/netty-tcnative-boringssl-static-@tcnative.version@.jar"
+groupId = "io.netty"

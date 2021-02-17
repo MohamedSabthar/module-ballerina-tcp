@@ -61,6 +61,9 @@ dependencies {
     externalJars (group: 'io.netty', name: 'netty-codec', version: "${nettyVersion}") {
         transitive = false
     }
+    externalJars (group: 'io.netty', name: 'netty-tcnative-boringssl-static', version:"${nettyTcnativeVersion}") {
+        transitive = false
+    }
     compile project(":${packageName}-native")
 }
 
@@ -119,10 +122,12 @@ task updateTomlFile {
         def stdlibDependentIoVersion = project.stdlibIoVersion.replace("${snapshotVersion}", "")
         def stdlibDependentLogVersion = project.stdlibLogVersion.replace("${snapshotVersion}", "")
         def nettyVersion = project.nettyVersion
+        def nettyTcnativeVersion = project.nettyTcnativeVersion
 
         def newConfig = ballerinaConfigFile.text.replace("@project.version@", project.version)
         newConfig = newConfig.replace("@toml.version@", tomlVersion)
         newConfig = newConfig.replace("@netty.version@", nettyVersion)
+        newConfig = newConfig.replace("@tcnative.version@", nettyTcnativeVersion)
         ballerinaConfigFile.text = newConfig
 
         def newDependencyConfig = ballerinaDependencyFile.text.replace("@stdlib.io.version@", stdlibDependentIoVersion)
