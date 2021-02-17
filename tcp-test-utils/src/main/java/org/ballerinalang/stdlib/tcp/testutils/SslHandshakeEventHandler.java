@@ -15,15 +15,18 @@ class SslHandshakeEventHandler extends ChannelInboundHandlerAdapter {
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof SslHandshakeCompletionEvent) {
             if (((SslHandshakeCompletionEvent) evt).isSuccess()) {
+                System.out.println("Handshake success" + ctx.channel().remoteAddress());
                 ctx.pipeline().addLast(new SecureServerHandler());
                 ctx.pipeline().remove(this);
+            } else {
+                System.out.println("Handshake failure" + ctx.channel().remoteAddress());
             }
         }
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        cause.printStackTrace();
+        System.out.println(cause.getMessage() + ctx.channel().remoteAddress());
         ctx.close();
     }
 }

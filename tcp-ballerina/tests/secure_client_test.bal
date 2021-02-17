@@ -43,7 +43,7 @@ function testCiphers() returns @tainted error? {
     io:println("SecureClient: ", socketClient);
 }
 
-@test:Config {dependsOn: [testServerAlreadyClosed], enable: true}
+@test:Config {dependsOn: [testCiphers], enable: true}
 function testSecureClientEcho() returns @tainted error? {
     Client socketClient = check new ("localhost", 9002, secureSocket = {
         certificate: {path: certPath},
