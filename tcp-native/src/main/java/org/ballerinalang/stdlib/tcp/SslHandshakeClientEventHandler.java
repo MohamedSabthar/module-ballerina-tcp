@@ -48,9 +48,10 @@ public class SslHandshakeClientEventHandler extends ChannelInboundHandlerAdapter
             if (((SslHandshakeCompletionEvent) event).isSuccess()) {
                 ctx.pipeline().addLast(Constants.FLOW_CONTROL_HANDLER, new FlowControlHandler());
                 ctx.pipeline().addLast(Constants.CLIENT_HANDLER, tcpClientHandler);
-                balClientInitCallback.complete(null);
                 ctx.pipeline().remove(this);
+                balClientInitCallback.complete(null);
             } else {
+                ctx.pipeline().remove(this);
                 balClientInitCallback.complete(Utils.createSocketError(((SslHandshakeCompletionEvent) event).
                         cause().getMessage()));
                 ctx.close();

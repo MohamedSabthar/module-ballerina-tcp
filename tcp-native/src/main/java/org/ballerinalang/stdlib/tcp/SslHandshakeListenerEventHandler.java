@@ -45,9 +45,10 @@ public class SslHandshakeListenerEventHandler extends ChannelInboundHandlerAdapt
             if (((SslHandshakeCompletionEvent) event).isSuccess()) {
                 ctx.pipeline().addLast(Constants.FLOW_CONTROL_HANDLER, new FlowControlHandler());
                 ctx.pipeline().addLast(Constants.LISTENER_HANDLER, tcpListenerHandler);
-                ctx.fireChannelActive();
                 ctx.pipeline().remove(this);
+                ctx.fireChannelActive();
             } else {
+                ctx.pipeline().remove(this);
                 ctx.close();
             }
         } else if (!(event instanceof SslCloseCompletionEvent)) {
