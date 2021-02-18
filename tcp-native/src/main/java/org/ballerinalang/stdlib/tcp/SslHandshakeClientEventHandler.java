@@ -54,10 +54,11 @@ public class SslHandshakeClientEventHandler extends ChannelInboundHandlerAdapter
                 ctx.pipeline().remove(this);
             } else {
                 PrintStream console = System.out;
-
+                console.println("++++++++++++++++++++++++++++++++++++++");
                 for (var a : ctx.pipeline().names()) {
                     console.println(a);
                 }
+                console.println("--------------------------------------");
                 balClientInitCallback.complete(Utils.createSocketError(((SslHandshakeCompletionEvent) event).
                         cause().getMessage()));
                 ctx.close();
