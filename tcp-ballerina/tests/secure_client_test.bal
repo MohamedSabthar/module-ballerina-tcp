@@ -9,6 +9,7 @@ function setupServer() {
 
 @test:Config {dependsOn: [testServerAlreadyClosed], enable: true}
 function testProtocolVersion() returns @tainted error? {
+    io:println("start testProtocolVersion");
     Error|Client socketClient = new ("localhost", 9002, secureSocket = {
         certificate: {path: certPath},
         protocol: {
@@ -23,10 +24,12 @@ function testProtocolVersion() returns @tainted error? {
         check socketClient->close();
     }
     io:println("SecureClient: ", socketClient);
+    io:println("end testProtocolVersion");
 }
 
 @test:Config {dependsOn: [testProtocolVersion], enable: true}
 function testCiphers() returns @tainted error? {
+    io:println("start testCiphers");
     Error|Client socketClient = new ("localhost", 9002, secureSocket = {
         certificate: {path: certPath},
         protocol: {
@@ -41,6 +44,7 @@ function testCiphers() returns @tainted error? {
         check socketClient->close();
     }
     io:println("SecureClient: ", socketClient);
+    io:println("end testCiphers");
 }
 
 @test:Config {dependsOn: [testCiphers], enable: true}
@@ -91,6 +95,7 @@ function testSecureListenerWithSecureClient() returns @tainted error? {
 
 @test:Config {dependsOn: [testSecureListenerWithSecureClient], enable: true }
 function testSecureListenerWithClient() returns @tainted error? {
+    io:println("start testSecureListenerWithClient");
     Client socketClient = check new ("localhost", 9002);
 
     // This is not a secureClient since this is not a handshake msg,
@@ -105,6 +110,7 @@ function testSecureListenerWithClient() returns @tainted error? {
     }
 
     check socketClient->close();
+    io:println("end testSecureListenerWithClient");
 }
 
 @test:AfterSuite {}
