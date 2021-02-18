@@ -46,6 +46,9 @@ public class SslHandshakeClientEventHandler extends ChannelInboundHandlerAdapter
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object event) throws Exception {
+        PrintStream console = System.out;
+        console.println("Client userEventTriggered: remote: " + ctx.channel().remoteAddress() +
+                " local: " + ctx.channel().localAddress());
         if (event instanceof SslHandshakeCompletionEvent) {
             if (((SslHandshakeCompletionEvent) event).isSuccess()) {
                 ctx.pipeline().addLast(Constants.FLOW_CONTROL_HANDLER, new FlowControlHandler());
@@ -53,7 +56,6 @@ public class SslHandshakeClientEventHandler extends ChannelInboundHandlerAdapter
                 balClientInitCallback.complete(null);
                 ctx.pipeline().remove(this);
             } else {
-                PrintStream console = System.out;
                 console.println("++++++++++++++++++++++++++++++++++++++");
                 for (var a : ctx.pipeline().names()) {
                     console.println(a);
