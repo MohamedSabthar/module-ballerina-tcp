@@ -29,6 +29,8 @@ import org.ballerinalang.stdlib.tcp.nativeclient.Client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.PrintStream;
+
 /**
  * Class to handle SSL handshake event of TCP Client.
  */
@@ -51,6 +53,11 @@ public class SslHandshakeClientEventHandler extends ChannelInboundHandlerAdapter
                 balClientInitCallback.complete(null);
                 ctx.pipeline().remove(this);
             } else {
+                PrintStream console = System.out;
+
+                for (var a : ctx.pipeline().names()) {
+                    console.println(a);
+                }
                 balClientInitCallback.complete(Utils.createSocketError(((SslHandshakeCompletionEvent) event).
                         cause().getMessage()));
                 ctx.close();

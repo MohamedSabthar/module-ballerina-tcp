@@ -31,6 +31,7 @@ import org.ballerinalang.stdlib.tcp.TcpFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.PrintStream;
 import java.net.InetSocketAddress;
 
 /**
@@ -39,11 +40,12 @@ import java.net.InetSocketAddress;
  * @since 1.1.0
  */
 public class Client {
-
+    static PrintStream console = System.out;
     private static final Logger log = LoggerFactory.getLogger(Client.class);
 
     public static Object init(Environment env, BObject client, BString remoteHost, int remotePort,
                               BMap<BString, Object> config) {
+        console.println("Init" + client.hashCode());
         final Future balFuture = env.markAsync();
 
         BString host = config.getStringValue(StringUtils.fromString(Constants.CONFIG_LOCALHOST));
@@ -101,7 +103,7 @@ public class Client {
 
     public static Object close(Environment env, BObject client) {
         final Future balFuture = env.markAsync();
-
+        console.println("Close" + client.hashCode());
         TcpClient tcpClient = (TcpClient) client.getNativeData(Constants.CLIENT);
         tcpClient.close(balFuture);
 
