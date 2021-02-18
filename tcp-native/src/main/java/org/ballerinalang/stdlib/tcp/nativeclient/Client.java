@@ -45,7 +45,7 @@ public class Client {
 
     public static Object init(Environment env, BObject client, BString remoteHost, int remotePort,
                               BMap<BString, Object> config) {
-        console.println("Init" + client.hashCode());
+        console.println("Init hash:" + client.hashCode() + " strand-id: " + env.getStrandId());
         final Future balFuture = env.markAsync();
 
         BString host = config.getStringValue(StringUtils.fromString(Constants.CONFIG_LOCALHOST));
