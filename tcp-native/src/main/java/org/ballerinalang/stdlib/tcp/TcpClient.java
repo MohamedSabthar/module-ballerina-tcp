@@ -76,7 +76,7 @@ public class TcpClient {
 
                     @Override
                     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-                        console.println("complete callback: " + callback.hashCode());
+                        console.println("complete callback: A ->" + callback.hashCode());
                         callback.complete(Utils.createSocketError(cause.getMessage()));
                         ctx.close();
                     }
@@ -87,11 +87,11 @@ public class TcpClient {
                         channelFuture.channel().config().setAutoRead(false);
                         channel = channelFuture.channel();
                         if (secureSocket == null) {
-                            console.println("complete callback: " + callback.hashCode());
+                            console.println("complete callback: B ->" + callback.hashCode());
                             callback.complete(null);
                         }
                     } else {
-                        console.println("complete callback: " + callback.hashCode());
+                        console.println("complete callback: C ->" + callback.hashCode());
                         callback.complete(Utils.createSocketError("Unable to connect with remote host: "
                                 + channelFuture.cause().getMessage()));
                     }

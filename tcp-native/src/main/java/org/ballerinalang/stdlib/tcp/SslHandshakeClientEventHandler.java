@@ -53,19 +53,19 @@ public class SslHandshakeClientEventHandler extends ChannelInboundHandlerAdapter
             if (((SslHandshakeCompletionEvent) event).isSuccess()) {
                 ctx.pipeline().addLast(Constants.FLOW_CONTROL_HANDLER, new FlowControlHandler());
                 ctx.pipeline().addLast(Constants.CLIENT_HANDLER, tcpClientHandler);
-                console.println("complete callback: " + balClientInitCallback.hashCode());
+                console.println("complete callback: D ->" + balClientInitCallback.hashCode());
                 balClientInitCallback.complete(null);
                 ctx.pipeline().remove(this);
-            } else {
-                console.println("++++++++++++++++++++++++++++++++++++++");
-                for (var a : ctx.pipeline().names()) {
-                    console.println(a);
-                }
-                console.println("--------------------------------------");
-                console.println("complete callback: " + balClientInitCallback.hashCode());
-                balClientInitCallback.complete(Utils.createSocketError(((SslHandshakeCompletionEvent) event).
-                        cause().getMessage()));
-                ctx.close();
+//            } else {
+//                console.println("++++++++++++++++++++++++++++++++++++++");
+//                for (var a : ctx.pipeline().names()) {
+//                    console.println(a);
+//                }
+//                console.println("--------------------------------------");
+//                console.println("complete callback: E-> " + balClientInitCallback.hashCode());
+//                balClientInitCallback.complete(Utils.createSocketError(((SslHandshakeCompletionEvent) event).
+//                        cause().getMessage()));
+//                ctx.close();
             }
         } else if (!(event instanceof SslCloseCompletionEvent)) {
             log.warn("Unexpected user event triggered");
@@ -75,8 +75,8 @@ public class SslHandshakeClientEventHandler extends ChannelInboundHandlerAdapter
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         log.error("Error while SSL handshake: " + cause.getMessage());
-        if (cause instanceof DecoderException) {
-            console.println("complete callback: " + balClientInitCallback.hashCode());
+        if (cause instanceof DecoderException && balClientInitCallback != null) {
+            console.println("complete callback: F -> " + balClientInitCallback.hashCode());
             balClientInitCallback.complete(Utils.createSocketError(cause.getMessage()));
             ctx.close();
         }
