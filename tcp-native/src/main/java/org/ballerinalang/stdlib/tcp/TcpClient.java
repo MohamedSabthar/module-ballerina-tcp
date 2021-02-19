@@ -26,7 +26,6 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
@@ -73,13 +72,6 @@ public class TcpClient {
                             ch.pipeline().addLast(Constants.CLIENT_HANDLER, tcpClientHandler);
                         }
                     }
-
-                    @Override
-                    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-                        console.println("complete callback: A ->" + callback.hashCode());
-                        callback.complete(Utils.createSocketError(cause.getMessage()));
-                        ctx.close();
-                    }
                 })
                 .connect(remoteAddress, localAddress)
                 .addListener((ChannelFutureListener) channelFuture -> {
@@ -99,8 +91,7 @@ public class TcpClient {
     }
 
     private void setSSLHandler(SocketChannel channel, BMap<BString, Object> secureSocket,
-                               TcpClientHandler tcpClientHandler, Future callback) throws NoSuchAlgorithmException,
-            CertificateException, KeyStoreException, IOException, KeyManagementException {
+                               TcpClientHandler tcpClientHandler, Future callback) {
         BMap<BString, Object> certificate = (BMap<BString, Object>) secureSocket.getMapValue(StringUtils
                 .fromString(Constants.CERTIFICATE));
         BMap<BString, Object> protocol = (BMap<BString, Object>) secureSocket.getMapValue(StringUtils
@@ -109,15 +100,23 @@ public class TcpClient {
                 fromString(Constants.PROTOCOL_VERSIONS)).getStringArray();
         String[] ciphers = secureSocket.getArrayValue(StringUtils.fromString(Constants.CIPHERS)).getStringArray();
 
-        SSLContext sslContext = protocol != null ? SSLContext.getInstance(protocol.getStringValue(StringUtils
-                .fromString(Constants.NAME)).getValue())
-                : SSLContext.getDefault();
-        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(KeyManagerFactory
-                .getDefaultAlgorithm());
-        trustManagerFactory.init(SecureSocketUtils.truststore(certificate.getStringValue(StringUtils
-                .fromString(Constants.CERTIFICATE_PATH)).getValue()));
-        sslContext.init(null, trustManagerFactory.getTrustManagers(), null);
-        SSLEngine sslEngine = sslContext.createSSLEngine();
+        SSLEngine sslEngine = null;
+        try {
+            SSLContext sslContext = protocol != null ? SSLContext.getInstance(protocol.getStringValue(StringUtils
+                    .fromString(Constants.NAME)).getValue())
+                    : SSLContext.getDefault();
+            TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(KeyManagerFactory
+                    .getDefaultAlgorithm());
+            trustManagerFactory.init(SecureSocketUtils.truststore(certificate.getStringValue(StringUtils
+                    .fromString(Constants.CERTIFICATE_PATH)).getValue()));
+            sslContext.init(null, trustManagerFactory.getTrustManagers(), null);
+            sslEngine = sslContext.createSSLEngine();
+        } catch (NoSuchAlgorithmException | CertificateException | KeyStoreException | KeyManagementException |
+                IOException e) {
+            callback.complete(Utils.createSocketError(e.getMessage()));
+            return;
+        }
+
         sslEngine.setUseClientMode(true);
 
         SSLParameters sslParameters = new SSLParameters();
