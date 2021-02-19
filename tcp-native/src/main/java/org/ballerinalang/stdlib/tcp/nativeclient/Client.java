@@ -43,9 +43,10 @@ public class Client {
     static PrintStream console = System.out;
     private static final Logger log = LoggerFactory.getLogger(Client.class);
 
-    public static Object init(Environment env, BObject client, BString remoteHost, int remotePort,
+    public static Object externInit(Environment env, BObject client, BString remoteHost, int remotePort,
                               BMap<BString, Object> config) {
-        console.println("Init hash:" + client.hashCode() + " strand-id: " + env.getStrandId());
+        console.println("Init hash: " + client.hashCode() + " strand-id: " + env.getStrandId());
+        console.println("Thread id :" + Thread.currentThread().getId());
         final Future balFuture = env.markAsync();
 
         BString host = config.getStringValue(StringUtils.fromString(Constants.CONFIG_LOCALHOST));

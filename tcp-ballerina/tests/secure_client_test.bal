@@ -9,7 +9,7 @@ function setupServer() {
 
 @test:Config {dependsOn: [testServerAlreadyClosed], enable: true}
 function testProtocolVersion() returns @tainted error? {
-    io:println("start testProtocolVersion");
+    io:println("\n\n\n\n\n\n\n\nstart testProtocolVersion");
     Error|Client socketClient = new ("localhost", 9002, secureSocket = {
         certificate: {path: certPath},
         protocol: {
@@ -29,7 +29,7 @@ function testProtocolVersion() returns @tainted error? {
 
 @test:Config {dependsOn: [testProtocolVersion], enable: true}
 function testCiphers() returns @tainted error? {
-    io:println("start testCiphers");
+    io:println("\n\n\n\n\n\n\n\nstart testCiphers");
     Error|Client socketClient = new ("localhost", 9002, secureSocket = {
         certificate: {path: certPath},
         protocol: {
@@ -49,7 +49,7 @@ function testCiphers() returns @tainted error? {
 
 @test:Config {dependsOn: [testCiphers], enable: true}
 function testSecureClientEcho() returns @tainted error? {
-    io:println("start testSecureClientEcho");
+    io:println("\n\n\n\n\n\n\n\nstart testSecureClientEcho");
     Client socketClient = check new ("localhost", 9002, secureSocket = {
         certificate: {path: certPath},
         protocol: {
@@ -72,7 +72,7 @@ function testSecureClientEcho() returns @tainted error? {
 
 @test:Config {dependsOn: [testSecureClientEcho], enable: true}
 function testSecureListenerWithSecureClient() returns @tainted error? {
-    io:println("start testSecureListenerWithSecureClient");
+    io:println("\n\n\n\n\n\n\n\nstart testSecureListenerWithSecureClient");
     Client socketClient = check new ("localhost", 9002, secureSocket = {
         certificate: {path: certPath},
         protocol: {
@@ -95,7 +95,7 @@ function testSecureListenerWithSecureClient() returns @tainted error? {
 
 @test:Config {dependsOn: [testSecureListenerWithSecureClient], enable: true }
 function testSecureListenerWithClient() returns @tainted error? {
-    io:println("start testSecureListenerWithClient");
+    io:println("\n\n\n\n\n\n\n\nstart testSecureListenerWithClient");
     Client socketClient = check new ("localhost", 9002);
 
     // This is not a secureClient since this is not a handshake msg,

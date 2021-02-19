@@ -15,6 +15,7 @@
 // under the License.
 
 import ballerina/jballerina.java;
+import ballerina/io;
 
 # Initializes the TCP connection client based on the 
 # provided configurations.
@@ -30,7 +31,10 @@ public client class Client {
     # + remotePort - The port number of the remmote host
     # + config - Connection oriented client related configuration
     public isolated function init(string remoteHost, int remotePort, *ClientConfig config) returns Error? {
-        return initNewClient(self, remoteHost, remotePort, config);
+        io:println("ballerina: star externInit");
+        Error? result = externInit(self, remoteHost, remotePort, config);
+        io:println("ballerian: end externInit");
+        return result;
     }
 
     # Sends the given data to the connected remote host.
@@ -83,9 +87,9 @@ public type ClientConfig record {|
     SecureSocket secureSocket?;
 |};
 
-isolated function initNewClient(Client clientObj, string remoteHost, int remotePort, ClientConfig config) 
+isolated function externInit(Client clientObj, string remoteHost, int remotePort, ClientConfig config) 
 returns Error? = @java:Method {
-    name: "init",
+    name: "externInit",
     'class: "org.ballerinalang.stdlib.tcp.nativeclient.Client"
 } external;
 

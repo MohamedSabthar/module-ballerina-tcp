@@ -37,6 +37,7 @@ import java.io.PrintStream;
 public class SslHandshakeClientEventHandler extends ChannelInboundHandlerAdapter {
     private TcpClientHandler tcpClientHandler;
     private Future balClientInitCallback;
+    static PrintStream console = System.out;
     private static final Logger log = LoggerFactory.getLogger(Client.class);
 
     public SslHandshakeClientEventHandler(TcpClientHandler handler, Future callback) {
@@ -46,13 +47,13 @@ public class SslHandshakeClientEventHandler extends ChannelInboundHandlerAdapter
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object event) throws Exception {
-        PrintStream console = System.out;
         console.println("Client userEventTriggered: remote: " + ctx.channel().remoteAddress() +
                 " local: " + ctx.channel().localAddress());
         if (event instanceof SslHandshakeCompletionEvent) {
             if (((SslHandshakeCompletionEvent) event).isSuccess()) {
                 ctx.pipeline().addLast(Constants.FLOW_CONTROL_HANDLER, new FlowControlHandler());
                 ctx.pipeline().addLast(Constants.CLIENT_HANDLER, tcpClientHandler);
+                console.println("complete callback: " + balClientInitCallback.hashCode());
                 balClientInitCallback.complete(null);
                 ctx.pipeline().remove(this);
             } else {
@@ -61,6 +62,7 @@ public class SslHandshakeClientEventHandler extends ChannelInboundHandlerAdapter
                     console.println(a);
                 }
                 console.println("--------------------------------------");
+                console.println("complete callback: " + balClientInitCallback.hashCode());
                 balClientInitCallback.complete(Utils.createSocketError(((SslHandshakeCompletionEvent) event).
                         cause().getMessage()));
                 ctx.close();
@@ -74,6 +76,7 @@ public class SslHandshakeClientEventHandler extends ChannelInboundHandlerAdapter
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         log.error("Error while SSL handshake: " + cause.getMessage());
         if (cause instanceof DecoderException) {
+            console.println("complete callback: " + balClientInitCallback.hashCode());
             balClientInitCallback.complete(Utils.createSocketError(cause.getMessage()));
             ctx.close();
         }

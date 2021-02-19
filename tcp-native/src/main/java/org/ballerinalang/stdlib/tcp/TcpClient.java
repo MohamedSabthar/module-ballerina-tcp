@@ -35,6 +35,7 @@ import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.net.InetSocketAddress;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
@@ -55,6 +56,7 @@ public class TcpClient {
 
     private Channel channel;
     private final Bootstrap clientBootstrap;
+    static PrintStream console = System.out;
 
     public TcpClient(InetSocketAddress localAddress, InetSocketAddress remoteAddress, EventLoopGroup group,
                      Future callback, BMap<BString, Object> secureSocket) {
@@ -74,6 +76,7 @@ public class TcpClient {
 
                     @Override
                     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+                        console.println("complete callback: " + callback.hashCode());
                         callback.complete(Utils.createSocketError(cause.getMessage()));
                         ctx.close();
                     }
@@ -84,9 +87,11 @@ public class TcpClient {
                         channelFuture.channel().config().setAutoRead(false);
                         channel = channelFuture.channel();
                         if (secureSocket == null) {
+                            console.println("complete callback: " + callback.hashCode());
                             callback.complete(null);
                         }
                     } else {
+                        console.println("complete callback: " + callback.hashCode());
                         callback.complete(Utils.createSocketError("Unable to connect with remote host: "
                                 + channelFuture.cause().getMessage()));
                     }
