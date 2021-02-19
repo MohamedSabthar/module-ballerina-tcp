@@ -56,16 +56,18 @@ public class SslHandshakeClientEventHandler extends ChannelInboundHandlerAdapter
                 console.println("complete callback: D ->" + balClientInitCallback.hashCode());
                 balClientInitCallback.complete(null);
                 ctx.pipeline().remove(this);
-//            } else {
-//                console.println("++++++++++++++++++++++++++++++++++++++");
-//                for (var a : ctx.pipeline().names()) {
-//                    console.println(a);
-//                }
-//                console.println("--------------------------------------");
-//                console.println("complete callback: E-> " + balClientInitCallback.hashCode());
-//                balClientInitCallback.complete(Utils.createSocketError(((SslHandshakeCompletionEvent) event).
-//                        cause().getMessage()));
-//                ctx.close();
+            } else {
+                // catch timeout error
+                console.println("++++++++++++++++++++++++++++++++++++++");
+                for (var a : ctx.pipeline().names()) {
+                    console.println(a);
+                }
+                console.println("--------------------------------------");
+                console.println("complete callback: E-> " + balClientInitCallback.hashCode());
+                balClientInitCallback.complete(Utils.createSocketError(((SslHandshakeCompletionEvent) event).
+                        cause().getMessage()));
+                balClientInitCallback = null;
+                ctx.close();
             }
         } else if (!(event instanceof SslCloseCompletionEvent)) {
             log.warn("Unexpected user event triggered");
