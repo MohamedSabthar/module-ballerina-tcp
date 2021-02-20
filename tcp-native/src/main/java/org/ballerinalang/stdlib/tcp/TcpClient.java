@@ -45,7 +45,6 @@ import java.util.concurrent.TimeUnit;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
-import javax.net.ssl.SSLParameters;
 import javax.net.ssl.TrustManagerFactory;
 
 /**
@@ -119,14 +118,12 @@ public class TcpClient {
 
         sslEngine.setUseClientMode(true);
 
-        SSLParameters sslParameters = new SSLParameters();
         if (protocolVersions.length > 0) {
-            sslParameters.setProtocols(protocolVersions);
+            sslEngine.setEnabledProtocols(protocolVersions);
         }
         if (ciphers != null && ciphers.length > 0) {
-            sslParameters.setCipherSuites(ciphers);
+            sslEngine.setEnabledCipherSuites(ciphers);
         }
-        sslEngine.setSSLParameters(sslParameters);
 
         channel.pipeline().addFirst(Constants.SSL_HANDLER, new SslHandler(sslEngine));
         channel.pipeline().addLast(Constants.SSL_HANDSHAKE_HANDLER,
