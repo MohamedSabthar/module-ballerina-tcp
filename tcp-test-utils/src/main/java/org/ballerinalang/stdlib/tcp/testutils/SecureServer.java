@@ -59,8 +59,7 @@ public class SecureServer implements Runnable {
                         }
                     });
 
-            ChannelFuture f = b.bind().sync();
-            f.channel().closeFuture().sync();
+            b.bind().sync();
         } catch (Exception e) {
             e.printStackTrace();
         }
