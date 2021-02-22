@@ -42,6 +42,11 @@ public class SslHandshakeClientEventHandler extends ChannelInboundHandlerAdapter
         this.balClientInitCallback = callback;
     }
 
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        Utils.print("SslEventHandler channelActive: local: " + ctx.channel().localAddress() + "remote: "
+                + ctx.channel().remoteAddress());
+    }
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object event) throws Exception {
