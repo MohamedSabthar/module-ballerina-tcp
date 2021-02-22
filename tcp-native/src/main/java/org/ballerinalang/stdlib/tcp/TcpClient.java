@@ -166,9 +166,11 @@ public class TcpClient {
         channel.close().addListener((ChannelFutureListener) future -> {
             if (future.isSuccess()) {
                 callback.complete(null);
+                Utils.print("Channel close");
             } else {
                 callback.complete(Utils.createSocketError("Unable to close the  TCP client. "
                         + future.cause().getMessage()));
+                Utils.print("Channel close error");
             }
         });
     }
