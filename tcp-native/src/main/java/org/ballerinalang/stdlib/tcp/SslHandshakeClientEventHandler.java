@@ -42,8 +42,11 @@ public class SslHandshakeClientEventHandler extends ChannelInboundHandlerAdapter
         this.balClientInitCallback = callback;
     }
 
+
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object event) throws Exception {
+        Utils.print("Client userEventTriggered: remote: " + ctx.channel().remoteAddress() +
+                " local: " + ctx.channel().localAddress());
         if (event instanceof SslHandshakeCompletionEvent) {
             if (((SslHandshakeCompletionEvent) event).isSuccess()) {
                 ctx.pipeline().addLast(Constants.FLOW_CONTROL_HANDLER, new FlowControlHandler());
@@ -51,8 +54,14 @@ public class SslHandshakeClientEventHandler extends ChannelInboundHandlerAdapter
                 balClientInitCallback.complete(null);
                 ctx.pipeline().remove(this);
             } else {
+                Utils.print("++++++++++++++++++++++++++++++++++++++");
+                for (var a : ctx.pipeline().names()) {
+                    Utils.print(a);
+                }
+                Utils.print("--------------------------------------");
                 balClientInitCallback.complete(Utils.createSocketError(((SslHandshakeCompletionEvent) event).
                         cause().getMessage()));
+                Utils.print("Callback complete D: " + balClientInitCallback.hashCode());
                 balClientInitCallback = null;
                 ctx.close();
             }
@@ -66,6 +75,7 @@ public class SslHandshakeClientEventHandler extends ChannelInboundHandlerAdapter
         log.error("Error while SSL handshake: " + cause.getMessage());
         if (cause instanceof DecoderException && balClientInitCallback != null) {
             balClientInitCallback.complete(Utils.createSocketError(cause.getMessage()));
+            Utils.print("Callback complete E: " + balClientInitCallback.hashCode());
             ctx.close();
         }
     }

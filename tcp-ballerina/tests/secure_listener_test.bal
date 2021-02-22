@@ -3,6 +3,7 @@ import ballerina/io;
 
 @test:Config {dependsOn: [testSecureClientEcho], enable: true}
 function testSecureListenerWithSecureClient() returns @tainted error? {
+    io:println("\n\n\n\n\n\n start testSecureListenerWithSecureClient");
     Client socketClient = check new ("localhost", PORT4, secureSocket = {
         certificate: {path: certPath},
         protocol: {
@@ -20,10 +21,12 @@ function testSecureListenerWithSecureClient() returns @tainted error? {
     test:assertEquals('string:fromBytes(receivedData), msg, "Found unexpected output");
 
     check socketClient->close();
+    io:println("end testSecureListenerWithSecureClient");
 }
 
-@test:Config {dependsOn: [testSecureListenerWithSecureClient], enable: true }
+@test:Config {dependsOn: [testSecureListenerWithSecureClient], enable: true}
 function testSecureListenerWithClient() returns @tainted error? {
+    io:println("\n\n\n\n\n\n start testSecureListenerWithClient");
     Client socketClient = check new ("localhost", PORT4);
 
     // This is not a secureClient since this is not a handshake msg,
@@ -38,4 +41,5 @@ function testSecureListenerWithClient() returns @tainted error? {
     }
 
     check socketClient->close();
+    io:println("end testSecureListenerWithClient");
 }

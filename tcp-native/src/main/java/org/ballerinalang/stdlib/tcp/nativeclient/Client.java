@@ -28,6 +28,7 @@ import io.ballerina.runtime.api.values.BString;
 import org.ballerinalang.stdlib.tcp.Constants;
 import org.ballerinalang.stdlib.tcp.TcpClient;
 import org.ballerinalang.stdlib.tcp.TcpFactory;
+import org.ballerinalang.stdlib.tcp.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +46,7 @@ public class Client {
     public static Object externInit(Environment env, BObject client, BString remoteHost, int remotePort,
                                     BMap<BString, Object> config) {
         final Future balFuture = env.markAsync();
-
+        Utils.print("externInit: " + client.hashCode() + "threadId: " + Thread.currentThread().getId());
         BString host = config.getStringValue(StringUtils.fromString(Constants.CONFIG_LOCALHOST));
         InetSocketAddress remoteAddress = new InetSocketAddress(remoteHost.getValue(), remotePort);
 
@@ -94,7 +95,7 @@ public class Client {
 
         TcpClient tcpClient = (TcpClient) client.getNativeData(Constants.CLIENT);
         tcpClient.close(balFuture);
-
+        Utils.print("externClose: " + client.hashCode());
         return null;
     }
 }

@@ -78,10 +78,12 @@ public class TcpClient {
                         channel = channelFuture.channel();
                         if (secureSocket == null) {
                             callback.complete(null);
+                            Utils.print("Callback complete A: " + callback.hashCode());
                         }
                     } else {
                         callback.complete(Utils.createSocketError("Unable to connect with remote host: "
                                 + channelFuture.cause().getMessage()));
+                        Utils.print("Callback complete B: " + callback.hashCode());
                     }
                 });
     }
@@ -110,6 +112,7 @@ public class TcpClient {
         } catch (NoSuchAlgorithmException | CertificateException | KeyStoreException | IOException
                 | KeyManagementException e) {
             callback.complete(Utils.createSocketError(e.getMessage()));
+            Utils.print("Callback complete C: " + callback.hashCode());
             return;
         }
 
