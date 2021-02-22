@@ -21,9 +21,8 @@ public class SecureClient {
         group = new NioEventLoopGroup();
         try {
             Bootstrap b = new Bootstrap();
-            b.group(group)
+            ChannelFuture f = b.group(group)
                     .channel(NioSocketChannel.class)
-                    .localAddress(new InetSocketAddress(PORT))
                     .handler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         public void initChannel(SocketChannel ch)
@@ -45,9 +44,10 @@ public class SecureClient {
                             System.out.println("Test client: " + cause.getMessage());
                             ctx.close();
                         }
-                    });
+                    })
+                    .connect(new InetSocketAddress(9002), new InetSocketAddress(PORT)).sync();
 
-            ChannelFuture f = b.bind().sync();
+
 
             f.channel().write(Unpooled.wrappedBuffer("Hello from test client".getBytes())).sync()
                     .addListener((ChannelFutureListener) channelFuture -> {
