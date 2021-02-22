@@ -46,13 +46,12 @@ public class TcpListener {
     private Channel channel;
     private final EventLoopGroup bossGroup;
     private final EventLoopGroup workerGroup;
-    private final ServerBootstrap listenerBootstrap;
 
     public TcpListener(InetSocketAddress localAddress, EventLoopGroup bossGroup, EventLoopGroup workerGroup,
                        Future callback, TcpService tcpService, BMap<BString, Object> secureSocket) {
         this.bossGroup = bossGroup;
         this.workerGroup = workerGroup;
-        listenerBootstrap = new ServerBootstrap();
+        ServerBootstrap listenerBootstrap = new ServerBootstrap();
 
         if (secureSocket != null && !SecureSocketUtils.isValidCertAndKey(secureSocket, callback)) {
             return;

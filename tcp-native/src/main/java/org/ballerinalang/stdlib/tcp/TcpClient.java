@@ -53,11 +53,10 @@ import javax.net.ssl.TrustManagerFactory;
 public class TcpClient {
 
     private Channel channel;
-    private final Bootstrap clientBootstrap;
 
     public TcpClient(InetSocketAddress localAddress, InetSocketAddress remoteAddress, EventLoopGroup group,
                      Future callback, BMap<BString, Object> secureSocket) {
-        clientBootstrap = new Bootstrap();
+        Bootstrap clientBootstrap = new Bootstrap();
         clientBootstrap.group(group)
                 .channel(NioSocketChannel.class)
                 .handler(new ChannelInitializer<SocketChannel>() {
