@@ -52,6 +52,7 @@ public class SslHandshakeClientEventHandler extends ChannelInboundHandlerAdapter
                 ctx.pipeline().addLast(Constants.FLOW_CONTROL_HANDLER, new FlowControlHandler());
                 ctx.pipeline().addLast(Constants.CLIENT_HANDLER, tcpClientHandler);
                 balClientInitCallback.complete(null);
+                Utils.print("Callback complete D: " + balClientInitCallback.hashCode());
                 ctx.pipeline().remove(this);
             } else {
                 Utils.print("++++++++++++++++++++++++++++++++++++++");
@@ -61,7 +62,7 @@ public class SslHandshakeClientEventHandler extends ChannelInboundHandlerAdapter
                 Utils.print("--------------------------------------");
                 balClientInitCallback.complete(Utils.createSocketError(((SslHandshakeCompletionEvent) event).
                         cause().getMessage()));
-                Utils.print("Callback complete D: " + balClientInitCallback.hashCode());
+                Utils.print("Callback complete E: " + balClientInitCallback.hashCode());
                 balClientInitCallback = null;
                 ctx.close();
             }
@@ -75,7 +76,7 @@ public class SslHandshakeClientEventHandler extends ChannelInboundHandlerAdapter
         log.error("Error while SSL handshake: " + cause.getMessage());
         if (cause instanceof DecoderException && balClientInitCallback != null) {
             balClientInitCallback.complete(Utils.createSocketError(cause.getMessage()));
-            Utils.print("Callback complete E: " + balClientInitCallback.hashCode());
+            Utils.print("Callback complete F: " + balClientInitCallback.hashCode());
             ctx.close();
         }
     }
