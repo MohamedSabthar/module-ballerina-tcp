@@ -16,13 +16,12 @@
 
 import ballerina/io;
 
-configurable string keyPath = ?;
-configurable string certPath = ?;
+string certPath = "tests/etc/cert.pem";
+string keyPath = "tests/etc/key.pem";
 
 const int PORT1 = 8809;
 const int PORT2 = 8023;
 const int PORT3 = 8639;
-const int PORT4 = 8641;
 
 listener Listener echoServer = check new Listener(PORT1);
 listener Listener discardServer = check new Listener(PORT2);
@@ -101,18 +100,18 @@ service class closeService {
     }
 }
 
-service on new Listener(PORT4, secureSocket = {
-    certificate: {path: certPath},
-    privateKey: {path: keyPath},
-    protocol: {
-        name: "TLS",
-        versions: ["TLSv1.2", "TLSv1.1"]
-    },
-    ciphers: ["TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA"]
-}) {
+// service on new Listener(PORT4, secureSocket = {
+//     certificate: {path: certPath},
+//     privateKey: {path: keyPath},
+//     protocol: {
+//         name: "TLS",
+//         versions: ["TLSv1.2", "TLSv1.1"]
+//     },
+//     ciphers: ["TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA"]
+// }) {
 
-    isolated remote function onConnect(Caller caller) returns ConnectionService {
-        io:println("Client connected to secureEchoServer: ", caller.remotePort);
-        return new EchoService(caller);
-    }
-}
+//     isolated remote function onConnect(Caller caller) returns ConnectionService {
+//         io:println("Client connected to secureEchoServer: ", caller.remotePort);
+//         return new EchoService(caller);
+//     }
+// }

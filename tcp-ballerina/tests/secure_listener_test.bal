@@ -4,7 +4,7 @@ import ballerina/io;
 @test:Config {dependsOn: [testSecureClientEcho], enable: true}
 function testSecureListenerWithSecureClient() returns @tainted error? {
     io:println("\n\n\n\n\n\n start testSecureListenerWithSecureClient");
-    Client socketClient = check new ("localhost", PORT4, secureSocket = {
+    Client socketClient = check new ("localhost", 9002, secureSocket = {
         certificate: {path: certPath},
         protocol: {
             name: "TLS",
@@ -27,7 +27,7 @@ function testSecureListenerWithSecureClient() returns @tainted error? {
 @test:Config {dependsOn: [testSecureListenerWithSecureClient], enable: true}
 function testSecureListenerWithClient() returns @tainted error? {
     io:println("\n\n\n\n\n\n start testSecureListenerWithClient");
-    Client socketClient = check new ("localhost", PORT4);
+    Client socketClient = check new ("localhost", 9002);
 
     // This is not a secureClient since this is not a handshake msg,
     // this write will close the connection, so client will get Server already closed error.

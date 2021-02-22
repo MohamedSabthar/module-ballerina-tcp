@@ -49,7 +49,7 @@ function testCiphers() returns @tainted error? {
 
 }
 
-@test:Config {dependsOn: [testListenerEcho], enable: true}
+@test:Config {dependsOn: [testCiphers], enable: true}
 function testSecureClientEcho() returns @tainted error? {
     io:println("\n\n\n\n\n\n start testSecureClientEcho");
     Client socketClient = check new ("localhost", 9002, secureSocket = {
