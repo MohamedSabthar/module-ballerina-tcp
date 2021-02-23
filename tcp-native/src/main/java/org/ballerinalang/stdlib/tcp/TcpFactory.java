@@ -35,6 +35,10 @@ public class TcpFactory {
     private final EventLoopGroup bossGroup;
     private final EventLoopGroup workerGroup;
 
+    static {
+        System.setProperty("javax.net.debug", "ssl:handshake");  
+    }
+ 
     private TcpFactory() {
         int totalNumberOfProcessors = Runtime.getRuntime().availableProcessors();
         bossGroup = new NioEventLoopGroup(totalNumberOfProcessors);
