@@ -24,22 +24,22 @@ function testSecureListenerWithSecureClient() returns @tainted error? {
     io:println("end testSecureListenerWithSecureClient");
 }
 
-// @test:Config {dependsOn: [testSecureListenerWithSecureClient], enable: true}
-// function testSecureListenerWithClient() returns @tainted error? {
-//     io:println("\n\n\n\n\n\n start testSecureListenerWithClient");
-//     Client socketClient = check new ("localhost", 9002);
+@test:Config {dependsOn: [testSecureListenerWithSecureClient], enable: true}
+function testSecureListenerWithClient() returns @tainted error? {
+    io:println("\n\n\n\n\n\n start testSecureListenerWithClient");
+    Client socketClient = check new ("localhost", 9002);
 
-//     // This is not a secureClient since this is not a handshake msg,
-//     // this write will close the connection, so client will get Server already closed error.
-//     check socketClient->writeBytes("msg".toBytes());
+    // This is not a secureClient since this is not a handshake msg,
+    // this write will close the connection, so client will get Server already closed error.
+    check socketClient->writeBytes("msg".toBytes());
 
-//     Error|(readonly & byte[]) response = socketClient->readBytes();
-//     if (response is readonly & byte[]) {
-//         test:assertFail(msg = "Accessing secure server without secure client configuratoin, read should fail.");
-//     } else {
-//         io:println(response);
-//     }
+    Error|(readonly & byte[]) response = socketClient->readBytes();
+    if (response is readonly & byte[]) {
+        test:assertFail(msg = "Accessing secure server without secure client configuratoin, read should fail.");
+    } else {
+        io:println(response);
+    }
 
-//     check socketClient->close();
-//     io:println("end testSecureListenerWithClient");
-// }
+    check socketClient->close();
+    io:println("end testSecureListenerWithClient");
+}
