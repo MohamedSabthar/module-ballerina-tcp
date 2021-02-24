@@ -11,7 +11,11 @@ class SslHandshakeEventHandler extends ChannelInboundHandlerAdapter {
             if (((SslHandshakeCompletionEvent) evt).isSuccess()) {
                 ctx.pipeline().addLast(new SecureServerHandler());
                 ctx.pipeline().remove(this);
+            } else {
+                System.out.println("Test server handshake failure:" + ((SslHandshakeCompletionEvent) evt).cause().getMessage());
             }
+        } else {
+            System.out.println("Test server handshake failure :" + ((SslHandshakeCompletionEvent) evt).cause().getMessage());
         }
     }
 

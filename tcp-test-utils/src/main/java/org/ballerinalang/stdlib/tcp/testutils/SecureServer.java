@@ -42,8 +42,8 @@ public class SecureServer implements Runnable {
                                 throws Exception {
                             // Set ssl handler
                             SslContext sslContext = SslContextBuilder.forServer(
-                                    new File("../tcp-test-utils/etc/cert.pem"),
-                                    new File("../tcp-test-utils/etc/key.pem")).build();
+                                    new File("/home/mohamed/Desktop/module-ballerina-http-master/http-ballerina-tests/tests/certsandkeys/public.crt"),
+                                    new File("/home/mohamed/Desktop/module-ballerina-http-master/http-ballerina-tests/tests/certsandkeys/private.key")).build();
                             sslContext.sessionContext().setSessionCacheSize(100000);
                             sslContext.sessionContext().setSessionTimeout(100000);
                             SslHandler handler = sslContext.newHandler(ch.alloc());
