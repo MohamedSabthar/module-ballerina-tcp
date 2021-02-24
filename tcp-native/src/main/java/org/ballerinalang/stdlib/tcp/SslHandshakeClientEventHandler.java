@@ -56,6 +56,7 @@ public class SslHandshakeClientEventHandler extends ChannelInboundHandlerAdapter
             if (((SslHandshakeCompletionEvent) event).isSuccess()) {
                 ctx.pipeline().addLast(Constants.FLOW_CONTROL_HANDLER, new FlowControlHandler());
                 ctx.pipeline().addLast(Constants.CLIENT_HANDLER, tcpClientHandler);
+                ctx.channel().config().setAutoRead(false);
                 balClientInitCallback.complete(null);
                 Utils.print("Callback complete D: " + balClientInitCallback.hashCode());
                 ctx.pipeline().remove(this);

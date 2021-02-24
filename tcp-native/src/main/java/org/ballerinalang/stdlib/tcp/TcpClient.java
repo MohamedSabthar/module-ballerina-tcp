@@ -67,9 +67,9 @@ public class TcpClient {
                 .connect(remoteAddress, localAddress)
                 .addListener((ChannelFutureListener) channelFuture -> {
                     if (channelFuture.isSuccess()) {
-                        channelFuture.channel().config().setAutoRead(false);
                         channel = channelFuture.channel();
                         if (secureSocket == null) {
+                            channelFuture.channel().config().setAutoRead(false);
                             callback.complete(null);
                             Utils.print("Callback complete A: " + callback.hashCode());
                         }
