@@ -3,7 +3,7 @@ name: PR build
 on: [push, pull_request]
 
 jobs:
-  job1:
+  my_job1:
     ubuntu-build:
       runs-on: ubuntu-latest
       steps:
@@ -43,7 +43,7 @@ jobs:
             packageUser: ${{ github.actor }}
             packagePAT: ${{ secrets.GITHUB_TOKEN }}
           run: ./gradlew.bat build --scan --no-daemon
-  job2:
+  my_job2:
     ubuntu-build:
       runs-on: ubuntu-latest
       steps:
@@ -83,7 +83,7 @@ jobs:
             packageUser: ${{ github.actor }}
             packagePAT: ${{ secrets.GITHUB_TOKEN }}
           run: ./gradlew.bat build --scan --no-daemon
-  job3:
+  my_job3:
     ubuntu-build:
       runs-on: ubuntu-latest
       steps:
@@ -123,7 +123,7 @@ jobs:
             packageUser: ${{ github.actor }}
             packagePAT: ${{ secrets.GITHUB_TOKEN }}
           run: ./gradlew.bat build --scan --no-daemon
-  job4:
+  my_job4:
     ubuntu-build:
       runs-on: ubuntu-latest
       steps:
@@ -163,7 +163,7 @@ jobs:
             packageUser: ${{ github.actor }}
             packagePAT: ${{ secrets.GITHUB_TOKEN }}
           run: ./gradlew.bat build --scan --no-daemon
-  job5:
+  my_job5:
     ubuntu-build:
       runs-on: ubuntu-latest
       steps:
@@ -203,7 +203,7 @@ jobs:
             packageUser: ${{ github.actor }}
             packagePAT: ${{ secrets.GITHUB_TOKEN }}
           run: ./gradlew.bat build --scan --no-daemon
-  job6:
+  my_job6:
     ubuntu-build:
       runs-on: ubuntu-latest
       steps:
@@ -243,7 +243,7 @@ jobs:
             packageUser: ${{ github.actor }}
             packagePAT: ${{ secrets.GITHUB_TOKEN }}
           run: ./gradlew.bat build --scan --no-daemon
-  job7:
+  my_job7:
     ubuntu-build:
       runs-on: ubuntu-latest
       steps:
@@ -283,7 +283,7 @@ jobs:
             packageUser: ${{ github.actor }}
             packagePAT: ${{ secrets.GITHUB_TOKEN }}
           run: ./gradlew.bat build --scan --no-daemon
-  job8:
+  my_job8:
     ubuntu-build:
       runs-on: ubuntu-latest
       steps:
@@ -323,7 +323,7 @@ jobs:
             packageUser: ${{ github.actor }}
             packagePAT: ${{ secrets.GITHUB_TOKEN }}
           run: ./gradlew.bat build --scan --no-daemon
-  job9:
+  my_job9:
     ubuntu-build:
       runs-on: ubuntu-latest
       steps:
@@ -363,7 +363,7 @@ jobs:
             packageUser: ${{ github.actor }}
             packagePAT: ${{ secrets.GITHUB_TOKEN }}
           run: ./gradlew.bat build --scan --no-daemon
-  job10:
+  my_job10:
     ubuntu-build:
       runs-on: ubuntu-latest
       steps:
@@ -403,7 +403,7 @@ jobs:
             packageUser: ${{ github.actor }}
             packagePAT: ${{ secrets.GITHUB_TOKEN }}
           run: ./gradlew.bat build --scan --no-daemon
-  job11:
+  my_job11:
     ubuntu-build:
       runs-on: ubuntu-latest
       steps:
@@ -443,7 +443,7 @@ jobs:
             packageUser: ${{ github.actor }}
             packagePAT: ${{ secrets.GITHUB_TOKEN }}
           run: ./gradlew.bat build --scan --no-daemon
-  job12:
+  my_job12:
     ubuntu-build:
       runs-on: ubuntu-latest
       steps:
@@ -483,7 +483,7 @@ jobs:
             packageUser: ${{ github.actor }}
             packagePAT: ${{ secrets.GITHUB_TOKEN }}
           run: ./gradlew.bat build --scan --no-daemon
-  job13:
+  my_job13:
     ubuntu-build:
       runs-on: ubuntu-latest
       steps:
@@ -523,7 +523,7 @@ jobs:
             packageUser: ${{ github.actor }}
             packagePAT: ${{ secrets.GITHUB_TOKEN }}
           run: ./gradlew.bat build --scan --no-daemon
-  job14:
+  my_job14:
     ubuntu-build:
       runs-on: ubuntu-latest
       steps:
@@ -563,7 +563,7 @@ jobs:
             packageUser: ${{ github.actor }}
             packagePAT: ${{ secrets.GITHUB_TOKEN }}
           run: ./gradlew.bat build --scan --no-daemon
-  job15:
+  my_job15:
     ubuntu-build:
       runs-on: ubuntu-latest
       steps:
@@ -603,7 +603,7 @@ jobs:
             packageUser: ${{ github.actor }}
             packagePAT: ${{ secrets.GITHUB_TOKEN }}
           run: ./gradlew.bat build --scan --no-daemon
-  job16:
+  my_job16:
     ubuntu-build:
       runs-on: ubuntu-latest
       steps:
@@ -643,7 +643,7 @@ jobs:
             packageUser: ${{ github.actor }}
             packagePAT: ${{ secrets.GITHUB_TOKEN }}
           run: ./gradlew.bat build --scan --no-daemon
-  job17:
+  my_job17:
     ubuntu-build:
       runs-on: ubuntu-latest
       steps:
@@ -683,7 +683,7 @@ jobs:
             packageUser: ${{ github.actor }}
             packagePAT: ${{ secrets.GITHUB_TOKEN }}
           run: ./gradlew.bat build --scan --no-daemon
-  job18:
+  my_job18:
     ubuntu-build:
       runs-on: ubuntu-latest
       steps:
@@ -723,7 +723,7 @@ jobs:
             packageUser: ${{ github.actor }}
             packagePAT: ${{ secrets.GITHUB_TOKEN }}
           run: ./gradlew.bat build --scan --no-daemon
-  job19:
+  my_job19:
     ubuntu-build:
       runs-on: ubuntu-latest
       steps:
@@ -763,7 +763,7 @@ jobs:
             packageUser: ${{ github.actor }}
             packagePAT: ${{ secrets.GITHUB_TOKEN }}
           run: ./gradlew.bat build --scan --no-daemon
-  job20:
+  my_job20:
     ubuntu-build:
       runs-on: ubuntu-latest
       steps:
@@ -803,7 +803,7 @@ jobs:
             packageUser: ${{ github.actor }}
             packagePAT: ${{ secrets.GITHUB_TOKEN }}
           run: ./gradlew.bat build --scan --no-daemon
-  job21:
+  my_job21:
     ubuntu-build:
       runs-on: ubuntu-latest
       steps:
@@ -843,7 +843,7 @@ jobs:
             packageUser: ${{ github.actor }}
             packagePAT: ${{ secrets.GITHUB_TOKEN }}
           run: ./gradlew.bat build --scan --no-daemon
-  job22:
+  my_job22:
     ubuntu-build:
       runs-on: ubuntu-latest
       steps:
@@ -883,7 +883,7 @@ jobs:
             packageUser: ${{ github.actor }}
             packagePAT: ${{ secrets.GITHUB_TOKEN }}
           run: ./gradlew.bat build --scan --no-daemon
-  job23:
+  my_job23:
     ubuntu-build:
       runs-on: ubuntu-latest
       steps:
@@ -923,7 +923,7 @@ jobs:
             packageUser: ${{ github.actor }}
             packagePAT: ${{ secrets.GITHUB_TOKEN }}
           run: ./gradlew.bat build --scan --no-daemon
-  job24:
+  my_job24:
     ubuntu-build:
       runs-on: ubuntu-latest
       steps:
@@ -963,7 +963,7 @@ jobs:
             packageUser: ${{ github.actor }}
             packagePAT: ${{ secrets.GITHUB_TOKEN }}
           run: ./gradlew.bat build --scan --no-daemon
-  job25:
+  my_job25:
     ubuntu-build:
       runs-on: ubuntu-latest
       steps:
@@ -1003,7 +1003,7 @@ jobs:
             packageUser: ${{ github.actor }}
             packagePAT: ${{ secrets.GITHUB_TOKEN }}
           run: ./gradlew.bat build --scan --no-daemon
-  job26:
+  my_job26:
     ubuntu-build:
       runs-on: ubuntu-latest
       steps:
@@ -1043,7 +1043,7 @@ jobs:
             packageUser: ${{ github.actor }}
             packagePAT: ${{ secrets.GITHUB_TOKEN }}
           run: ./gradlew.bat build --scan --no-daemon
-  job27:
+  my_job27:
     ubuntu-build:
       runs-on: ubuntu-latest
       steps:
@@ -1083,7 +1083,7 @@ jobs:
             packageUser: ${{ github.actor }}
             packagePAT: ${{ secrets.GITHUB_TOKEN }}
           run: ./gradlew.bat build --scan --no-daemon
-  job28:
+  my_job28:
     ubuntu-build:
       runs-on: ubuntu-latest
       steps:
