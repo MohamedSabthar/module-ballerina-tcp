@@ -24,6 +24,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleStateEvent;
 
+import java.io.PrintStream;
 import java.util.LinkedList;
 
 /**
@@ -41,6 +42,8 @@ public class TcpClientHandler extends SimpleChannelInboundHandler<ByteBuf> {
             callback.complete(Utils.createSocketError("Connection closed by the server."));
         }
         ctx.channel().close();
+        PrintStream console = System.out;
+        console.println("Is this the reason for user_canceled????");
     }
 
     @Override
