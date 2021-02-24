@@ -30,7 +30,7 @@ listener Listener closeServer = check new Listener(PORT3);
 service on echoServer {
 
     isolated remote function onConnect(Caller caller) returns ConnectionService {
-        io:println("Client connected to EchoServer: ", caller.remotePort);
+        io:println("Client connected to echoServer: ", caller.remotePort);
         return new EchoService(caller);
     }
 }
