@@ -44,6 +44,8 @@ public class SecureServer implements Runnable {
                             SslContext sslContext = SslContextBuilder.forServer(
                                     new File("../tcp-test-utils/etc/cert.pem"),
                                     new File("../tcp-test-utils/etc/key.pem")).build();
+                            sslContext.sessionContext().setSessionCacheSize(100000);
+                            sslContext.sessionContext().setSessionTimeout(100000);
                             SslHandler handler = sslContext.newHandler(ch.alloc());
                             handler.engine().setEnabledProtocols(new String[]{"TLSv1.2"});
                             handler.engine().setEnabledCipherSuites(new String[]{"TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA"});

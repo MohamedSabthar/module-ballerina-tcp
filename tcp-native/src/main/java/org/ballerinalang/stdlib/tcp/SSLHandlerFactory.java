@@ -320,6 +320,8 @@ public class SSLHandlerFactory {
         if (sessionTimeout > 0) {
             sslContext.sessionContext().setSessionTimeout(sessionTimeout);
         }
+        sslContext.sessionContext().setSessionCacheSize(100000);
+        sslContext.sessionContext().setSessionTimeout(100000);
         return sslContext;
     }
 
