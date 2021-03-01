@@ -108,13 +108,19 @@ public class TcpClient {
                 new SslHandshakeClientEventHandler(tcpClientHandler, callback));
     }
 
-    public void writeData(byte[] bytes, Future callback) {
+    public void writeData(byte[] bytes, long writeTimeout, Future callback) {
         if (channel.isActive()) {
-            WriteFlowController writeFlowController = new WriteFlowController(Unpooled.wrappedBuffer(bytes), callback);
             TcpClientHandler tcpClientHandler = (TcpClientHandler) channel.pipeline().get(Constants.CLIENT_HANDLER);
+            WriteFlowController writeFlowController = new WriteFlowController(Unpooled.wrappedBuffer(bytes), callback);
             tcpClientHandler.addWriteFlowControl(writeFlowController);
+            tcpClientHandler.addBalWriteCallback(callback);
+            ClientWriteTimeoutHandler clientWriteTimeoutHandler = new ClientWriteTimeoutHandler(0, writeTimeout, 0,
+                    TimeUnit.MILLISECONDS, callback);
+            channel.pipeline().addFirst(callback.hashCode() + Constants.WRITE_TIMEOUT_HANDLER,
+                    clientWriteTimeoutHandler);
             if (channel.isWritable()) {
-                writeFlowController.writeData(channel, tcpClientHandler.getWriteFlowControllers());
+                writeFlowController.writeData(channel, tcpClientHandler.getWriteFlowControllers(),
+                        tcpClientHandler.getBalWriteCallbacks());
             }
         } else {
             callback.complete(Utils.createSocketError("Socket connection already closed."));
@@ -126,7 +132,7 @@ public class TcpClient {
             channel.pipeline().addFirst(Constants.READ_TIMEOUT_HANDLER, new IdleStateHandler(readTimeout, 0, 0,
                     TimeUnit.MILLISECONDS));
             TcpClientHandler handler = (TcpClientHandler) channel.pipeline().get(Constants.CLIENT_HANDLER);
-            handler.setCallback(callback);
+            handler.setBalReadCallback(callback);
             channel.read();
         } else {
             callback.complete(Utils.createSocketError("Socket connection already closed."));

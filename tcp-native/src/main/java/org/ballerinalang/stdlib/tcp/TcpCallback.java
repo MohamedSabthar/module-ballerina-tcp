@@ -54,9 +54,15 @@ public class TcpCallback implements Callback {
     @Override
     public void notifySuccess(Object object) {
         if (object instanceof BArray) {
-            // call writeBytes if the service returns byte[]
+            // Call writeBytes if the service returns byte[]
             byte[] byteContent = ((BArray) object).getBytes();
-            TcpListener.send(byteContent, channel, tcpService);
+            // Increment -1 to writeHandlerId for every return byte[] call
+            this.tcpService.setWriteTimeOutHandlerId(this.tcpService.getWriteTimeOutHandlerId() - 1);
+            try {
+                TcpListener.send(byteContent, channel, (TcpService) tcpService.clone());
+            } catch (CloneNotSupportedException e) {
+                Dispatcher.invokeOnError(tcpService, e.getMessage());
+            }
         } else if (isOnConnectInvoked) {
             this.tcpService.setConnectionService((BObject) object);
             TcpListener.resumeRead(channel);

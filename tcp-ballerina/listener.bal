@@ -81,8 +81,16 @@ public class Listener {
     }
 }
 
+# Configurations for the tcp listener.
+# 
+# + localHost - Local binding of the interface.
+# + writeTimeoutInMillis - The socket writing timeout value to be used 
+#                     in milliseconds. If this is not set,the default value
+#                     of 300000 milliseconds (5 minutes) will be used.
+# + secureSocket - secureSocket configuratoin for the listener.
 public type ListenerConfig record {|
    string localHost?;
+   int writeTimeoutInMillis = 300000;
    ListenerSecureSocket secureSocket?; 
 |};
 

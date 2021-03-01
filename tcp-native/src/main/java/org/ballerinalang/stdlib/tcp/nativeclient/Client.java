@@ -57,8 +57,10 @@ public class Client {
             localAddress = new InetSocketAddress(host.getValue(), 0);
         }
 
-        long timeout = config.getIntValue(StringUtils.fromString(Constants.CONFIG_READ_TIMEOUT));
-        client.addNativeData(Constants.CONFIG_READ_TIMEOUT, timeout);
+        long readTimeout = config.getIntValue(StringUtils.fromString(Constants.CONFIG_READ_TIMEOUT));
+        long writeTimeout = config.getIntValue(StringUtils.fromString(Constants.CONFIG_WRITE_TIMEOUT));
+        client.addNativeData(Constants.CONFIG_READ_TIMEOUT, readTimeout);
+        client.addNativeData(Constants.CONFIG_WRITE_TIMEOUT, writeTimeout);
         BMap<BString, Object> secureSocket = (BMap<BString, Object>) config.getMapValue(StringUtils.
                 fromString(Constants.SECURE_SOCKET));
 
@@ -83,8 +85,9 @@ public class Client {
         final Future balFuture = env.markAsync();
 
         byte[] byteContent = content.getBytes();
+        long writeTimeout = (long) client.getNativeData(Constants.CONFIG_WRITE_TIMEOUT);
         TcpClient tcpClient = (TcpClient) client.getNativeData(Constants.CLIENT);
-        tcpClient.writeData(byteContent, balFuture);
+        tcpClient.writeData(byteContent, writeTimeout, balFuture);
 
         return null;
     }

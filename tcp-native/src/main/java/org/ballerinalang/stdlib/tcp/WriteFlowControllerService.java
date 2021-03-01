@@ -24,6 +24,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * WriteFlowControllerService used to dispatch write via channelPipeline.
@@ -36,15 +37,26 @@ public class WriteFlowControllerService extends WriteFlowController {
         this.tcpService = tcpService;
     }
 
+
     @Override
-    public synchronized void writeData(Channel channel, LinkedList<WriteFlowController> writeFlowControllers) {
-        channel.writeAndFlush(sendBuffer).addListener((ChannelFutureListener) future -> {
-            callDispatch(future);
+    public synchronized void writeData(Channel channel, LinkedList<WriteFlowController> writeFlowControllers,
+                                       Map writeServices) {
+        ListenerWriteTimeoutHandler listenerWriteTimeoutHandler = (ListenerWriteTimeoutHandler) channel.pipeline()
+                .get(tcpService.getWriteTimeOutHandlerId() + Constants.WRITE_TIMEOUT_HANDLER);
+        if (!writeServices.containsKey(tcpService.getWriteTimeOutHandlerId()) && listenerWriteTimeoutHandler == null) {
+            writeFlowControllers.remove(this);
+            return;
+        }
+        ChannelFuture channelFuture = channel.writeAndFlush(sendBuffer).addListener((ChannelFutureListener) future -> {
+            callDispatch(future, writeServices);
         });
+        listenerWriteTimeoutHandler.setWriteChannelFuture(channelFuture);
         writeFlowControllers.remove(this);
     }
 
-    private void callDispatch(ChannelFuture future) {
+    private void callDispatch(ChannelFuture future, Map<Integer, TcpService> writeServices) {
+        future.channel().pipeline().remove(tcpService.getWriteTimeOutHandlerId() + Constants.WRITE_TIMEOUT_HANDLER);
+        writeServices.remove(tcpService.getWriteTimeOutHandlerId());
         if (!future.isSuccess()) {
             Dispatcher.invokeOnError(tcpService, "Failed to send data.");
         }

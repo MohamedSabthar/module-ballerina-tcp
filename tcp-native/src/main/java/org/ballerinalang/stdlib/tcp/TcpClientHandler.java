@@ -24,21 +24,24 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleStateEvent;
 
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * {@link TcpClientHandler} is a ChannelInboundHandler implementation for tcp client.
  */
 public class TcpClientHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
-    private Future callback;
+    private Future balReadCallback;
     private boolean isCloseTriggered = false;
     private LinkedList<WriteFlowController> writeFlowControllers = new LinkedList<>();
+    private Map<Integer, Future> balWriteCallbacks = new HashMap<>();
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        if (!isCloseTriggered && callback != null) {
-            callback.complete(Utils.createSocketError("Connection closed by the server."));
+        if (!isCloseTriggered && balReadCallback != null) {
+            balReadCallback.complete(Utils.createSocketError("Connection closed by the server."));
         }
         ctx.channel().close();
     }
@@ -46,18 +49,28 @@ public class TcpClientHandler extends SimpleChannelInboundHandler<ByteBuf> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, ByteBuf msg) throws Exception {
         ctx.channel().pipeline().remove(Constants.READ_TIMEOUT_HANDLER);
-        if (callback != null) {
-            callback.complete(Utils.returnReadOnlyBytes(msg));
+        if (balReadCallback != null) {
+            balReadCallback.complete(Utils.returnReadOnlyBytes(msg));
         }
     }
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object event) throws Exception {
-        if (event instanceof IdleStateEvent) {
+        if (event == IdleStateEvent.FIRST_READER_IDLE_STATE_EVENT || event == IdleStateEvent.READER_IDLE_STATE_EVENT) {
             // return timeout error
             ctx.channel().pipeline().remove(Constants.READ_TIMEOUT_HANDLER);
-            if (callback != null) {
-                callback.complete(Utils.createSocketError("Read timed out"));
+            if (balReadCallback != null) {
+                balReadCallback.complete(Utils.createSocketError("Read timed out"));
+            }
+        } else if (event instanceof ClientWriterIdleStateEvent) {
+            ClientWriterIdleStateEvent writeEvent = (ClientWriterIdleStateEvent) event;
+            ctx.pipeline().remove(writeEvent.getBalWriteCallback().hashCode() + Constants.WRITE_TIMEOUT_HANDLER);
+            if (writeEvent.getWriteChannelFuture() != null) {
+                writeEvent.getWriteChannelFuture().cancel(true);
+            }
+            if (balWriteCallbacks.containsKey(writeEvent.getBalWriteCallback().hashCode())) {
+                writeEvent.getBalWriteCallback().complete(Utils.createSocketError("Write timed out"));
+                balWriteCallbacks.remove(writeEvent.getBalWriteCallback().hashCode());
             }
         }
     }
@@ -65,8 +78,8 @@ public class TcpClientHandler extends SimpleChannelInboundHandler<ByteBuf> {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         ctx.channel().pipeline().remove(Constants.READ_TIMEOUT_HANDLER);
-        if (callback != null) {
-            callback.complete(Utils.createSocketError(cause.getMessage()));
+        if (balReadCallback != null) {
+            balReadCallback.complete(Utils.createSocketError(cause.getMessage()));
         }
     }
 
@@ -76,14 +89,18 @@ public class TcpClientHandler extends SimpleChannelInboundHandler<ByteBuf> {
             if (ctx.channel().isWritable()) {
                 WriteFlowController writeFlowController = writeFlowControllers.getFirst();
                 if (writeFlowController != null) {
-                    writeFlowController.writeData(ctx.channel(), writeFlowControllers);
+                    writeFlowController.writeData(ctx.channel(), writeFlowControllers, balWriteCallbacks);
                 }
             }
         }
     }
 
-    public void setCallback(Future callback) {
-        this.callback = callback;
+    public void setBalReadCallback(Future balReadCallback) {
+        this.balReadCallback = balReadCallback;
+    }
+
+    public void addBalWriteCallback(Future balWriteCallback) {
+        balWriteCallbacks.put(balWriteCallback.hashCode(), balWriteCallback);
     }
 
     public void setIsCloseTriggered() {
@@ -96,6 +113,10 @@ public class TcpClientHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
     public LinkedList<WriteFlowController> getWriteFlowControllers() {
         return writeFlowControllers;
+    }
+
+    public Map<Integer, Future> getBalWriteCallbacks() {
+        return balWriteCallbacks;
     }
 }
 

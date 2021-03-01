@@ -26,6 +26,7 @@ public class Constants {
     // Constants related to client config
     public static final String CONFIG_LOCALHOST = "localHost";
     public static final String CONFIG_READ_TIMEOUT = "timeoutInMillis";
+    public static final String CONFIG_WRITE_TIMEOUT = "writeTimeoutInMillis";
 
     // constant listener handler names
     public static final String LISTENER_HANDLER = "listenerHandler";
@@ -34,7 +35,7 @@ public class Constants {
     public static final String SSL_HANDLER = "SSL_Handler";
     public static final String SSL_HANDSHAKE_HANDLER = "SSL_handshakeHandler";
     public static final String FLOW_CONTROL_HANDLER = "flowControlHandler";
-
+    public static final String WRITE_TIMEOUT_HANDLER = "writeTimeoutHandler";
 
     // Remote method names
     public static final String ON_BYTES = "onBytes";

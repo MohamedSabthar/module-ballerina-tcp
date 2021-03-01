@@ -18,11 +18,14 @@
 
 package org.ballerinalang.stdlib.tcp;
 
+import io.ballerina.runtime.api.Future;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * {@link TcpListenerHandler} is a ChannelInboundHandler implementation for tcp listener.
@@ -31,6 +34,8 @@ public class TcpListenerHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
     private final TcpService tcpService;
     private LinkedList<WriteFlowController> writeFlowControllers = new LinkedList<>();
+    private Map<Integer, Future> balWriteCallbacks = new HashMap<>();
+    private Map<Integer, TcpService> writeServices = new HashMap<>();
 
     public TcpListenerHandler(TcpService tcpService) {
         this.tcpService = tcpService;
@@ -64,8 +69,37 @@ public class TcpListenerHandler extends SimpleChannelInboundHandler<ByteBuf> {
             if (ctx.channel().isWritable()) {
                 WriteFlowController writeFlowController = writeFlowControllers.getFirst();
                 if (writeFlowController != null) {
-                    writeFlowController.writeData(ctx.channel(), writeFlowControllers);
+                    if (writeFlowController instanceof WriteFlowControllerService) {
+                        writeFlowController.writeData(ctx.channel(), writeFlowControllers, writeServices);
+                    } else {
+                        writeFlowController.writeData(ctx.channel(), writeFlowControllers, balWriteCallbacks);
+                    }
                 }
+            }
+        }
+    }
+
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object event) throws Exception {
+        if (event instanceof ListenerWriteIdleStateEvent) {
+            ListenerWriteIdleStateEvent writeEvent = (ListenerWriteIdleStateEvent) event;
+            ctx.pipeline().remove(writeEvent.getTcpService().hashCode() + Constants.WRITE_TIMEOUT_HANDLER);
+            if (writeEvent.getWriteChannelFuture() != null) {
+                writeEvent.getWriteChannelFuture().cancel(true);
+            }
+            if (writeServices.containsKey(writeEvent.getTcpService().hashCode())) {
+                Dispatcher.invokeOnError(writeEvent.getTcpService(), "Write timed out");
+                writeServices.remove(writeEvent.getTcpService().hashCode());
+            }
+        } else if (event instanceof ClientWriterIdleStateEvent) {
+            ClientWriterIdleStateEvent writeEvent = (ClientWriterIdleStateEvent) event;
+            ctx.pipeline().remove(writeEvent.getBalWriteCallback().hashCode() + Constants.WRITE_TIMEOUT_HANDLER);
+            if (writeEvent.getWriteChannelFuture() != null) {
+                writeEvent.getWriteChannelFuture().cancel(true);
+            }
+            if (balWriteCallbacks.containsKey(writeEvent.getBalWriteCallback().hashCode())) {
+                writeEvent.getBalWriteCallback().complete(Utils.createSocketError("Write timed out"));
+                balWriteCallbacks.remove(writeEvent.getBalWriteCallback().hashCode());
             }
         }
     }
@@ -74,7 +108,23 @@ public class TcpListenerHandler extends SimpleChannelInboundHandler<ByteBuf> {
         writeFlowControllers.addLast(writeFlowController);
     }
 
+    public void addBalWriteCallback(Future balWriteCallback) {
+        balWriteCallbacks.put(balWriteCallback.hashCode(), balWriteCallback);
+    }
+
     public LinkedList<WriteFlowController> getWriteFlowControllers() {
         return writeFlowControllers;
+    }
+
+    public Map<Integer, Future> getBalWriteCallbacks() {
+        return balWriteCallbacks;
+    }
+
+    public void addWriteService(TcpService tcpService) {
+        writeServices.put(tcpService.getWriteTimeOutHandlerId(), tcpService);
+    }
+
+    public Map<Integer, TcpService> getWriteServices() {
+        return writeServices;
     }
 }

@@ -47,7 +47,9 @@ public class Listener {
     }
 
     public static Object externAttach(Environment env, BObject listener, BObject service) {
-        listener.addNativeData(Constants.SERVICE, new TcpService(env.getRuntime(), service));
+        BMap<BString, Object> config = (BMap<BString, Object>) listener.getNativeData(Constants.LISTENER_CONFIG);
+        long writeTimeout = config.getIntValue(StringUtils.fromString(Constants.CONFIG_WRITE_TIMEOUT));
+        listener.addNativeData(Constants.SERVICE, new TcpService(env.getRuntime(), service, writeTimeout));
         return null;
     }
 

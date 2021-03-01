@@ -24,16 +24,21 @@ import io.ballerina.runtime.api.values.BObject;
 /**
  * Represent TcpService which used for invoking service remote methods.
  */
-public class TcpService {
+public class TcpService implements Cloneable {
 
     private final Runtime runtime;
     private final BObject service;
     private BObject connectionService;
     private boolean isCallerClosed;
+    private long writeTimeout;
+    private int writeTimeOutHandlerId; // used as writeTimeOutHandlerId+Constants.WRITE_TIMEOUT_HANDLER to
+                                       // identify handler in pipeline
 
-    public TcpService(Runtime runtime, BObject service) {
+    public TcpService(Runtime runtime, BObject service, long writeTimeout) {
         this.runtime = runtime;
         this.service = service;
+        this.writeTimeout = writeTimeout;
+        this.writeTimeOutHandlerId = 0;
     }
 
     public Runtime getRuntime() {
@@ -58,5 +63,22 @@ public class TcpService {
 
     public void setIsCallerClosed(boolean callerClosed) {
         isCallerClosed = callerClosed;
+    }
+
+    public void setWriteTimeOutHandlerId(int writeTimeOutHandlerId) {
+        this.writeTimeOutHandlerId = writeTimeOutHandlerId;
+    }
+
+    public int getWriteTimeOutHandlerId() {
+        return writeTimeOutHandlerId;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
+    public long getWriteTimeout() {
+        return writeTimeout;
     }
 }

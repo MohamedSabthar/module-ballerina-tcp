@@ -16,7 +16,7 @@
  * under the License.
  */
 
- package org.ballerinalang.stdlib.tcp;
+package org.ballerinalang.stdlib.tcp;
 
 import io.ballerina.runtime.api.Future;
 import io.netty.buffer.ByteBuf;
@@ -25,6 +25,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * WriteFlowController used to write data via channelPipeline.
@@ -42,14 +43,26 @@ public class WriteFlowController {
         this.sendBuffer = buffer;
     }
 
-    public synchronized void writeData(Channel channel, LinkedList<WriteFlowController> writeFlowControllers) {
-        channel.writeAndFlush(sendBuffer).addListener((ChannelFutureListener) future -> {
-            completeCallback(future);
-        });
+    public synchronized void writeData(Channel channel, LinkedList<WriteFlowController> writeFlowControllers,
+                                       Map balWriteCallbacks) {
+        ClientWriteTimeoutHandler clientWriteTimeoutHandler = (ClientWriteTimeoutHandler) channel.pipeline()
+                .get(balWriteCallback.hashCode() + Constants.WRITE_TIMEOUT_HANDLER);
+
+        if (!balWriteCallbacks.containsKey(balWriteCallback.hashCode()) && clientWriteTimeoutHandler == null) {
+            writeFlowControllers.remove(this);
+            return;
+        }
+        ChannelFuture writeChannelFuture = channel.writeAndFlush(sendBuffer)
+                .addListener((ChannelFutureListener) future -> {
+                    completeCallback(future, balWriteCallbacks);
+                });
+        clientWriteTimeoutHandler.setWriteChannelFuture(writeChannelFuture);
         writeFlowControllers.remove(this);
     }
 
-    private void completeCallback(ChannelFuture future) {
+    private void completeCallback(ChannelFuture future, Map<Integer, Future> balWriteCallbacks) {
+        future.channel().pipeline().remove(balWriteCallback.hashCode() + Constants.WRITE_TIMEOUT_HANDLER);
+        balWriteCallbacks.remove(balWriteCallback.hashCode());
         if (future.isSuccess()) {
             balWriteCallback.complete(null);
         } else {
