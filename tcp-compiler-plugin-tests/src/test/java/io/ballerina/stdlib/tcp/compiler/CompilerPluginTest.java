@@ -148,17 +148,13 @@ public class CompilerPluginTest {
         Assert.assertEquals(diagnostic.diagnosticInfo().code(), TcpConnectionServiceValidator.TCP_104);
     }
 
-//    @Test
-//    public void testWithOtherModuleServices() {
-//        Package currentPackage = loadPackage("sample_package_10");
-//        PackageCompilation compilation = currentPackage.getCompilation();
-//        DiagnosticResult diagnosticResult = compilation.diagnosticResult();
-////        Assert.assertEquals(diagnosticResult.diagnostics().size(), 0);
-//        PrintStream console = System.out;
-//        for (Diagnostic diagnostic : diagnosticResult.diagnostics()) {
-//            console.println(diagnostic.diagnosticInfo().messageFormat());
-//        }
-//    }
+    @Test
+    public void testWithOtherModuleServices() {
+        Package currentPackage = loadPackage("sample_package_10");
+        PackageCompilation compilation = currentPackage.getCompilation();
+        DiagnosticResult diagnosticResult = compilation.diagnosticResult();
+        Assert.assertEquals(diagnosticResult.diagnostics().size(), 0);
+    }
 
     @Test
     public void testConnectionServiceWithInvalidReturnType() {
