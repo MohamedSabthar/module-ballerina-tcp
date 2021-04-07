@@ -18,12 +18,18 @@
 
 package io.ballerina.stdlib.tcp.compiler;
 
+import io.ballerina.compiler.syntax.tree.ClassDefinitionNode;
 import io.ballerina.compiler.syntax.tree.ImportDeclarationNode;
 import io.ballerina.compiler.syntax.tree.ModulePartNode;
+import io.ballerina.compiler.syntax.tree.Node;
 import io.ballerina.compiler.syntax.tree.SyntaxKind;
+import io.ballerina.compiler.syntax.tree.TypeReferenceNode;
 import io.ballerina.projects.plugins.AnalysisTask;
 import io.ballerina.projects.plugins.SyntaxNodeAnalysisContext;
 import org.ballerinalang.stdlib.tcp.Constants;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Class to validate TCP ConnectionService.
@@ -34,23 +40,19 @@ public class TcpConnectionServiceValidatorTask implements AnalysisTask<SyntaxNod
     public void perform(SyntaxNodeAnalysisContext ctx) {
         String modulePrefix = getPrefix(ctx);
 
-//        ClassDefinitionNode classDefinitionNode = (ClassDefinitionNode) ctx.node();
-//        List<Node> typeReferenceNodes = classDefinitionNode.members()
-//                .stream().filter(member -> member.kind() == SyntaxKind.TYPE_REFERENCE).collect(Collectors.toList());
-//
-//        for (Node node : typeReferenceNodes) {
-//            if (((TypeReferenceNode) node).typeName().toSourceCode()
-//            .compareTo(modulePrefix + SyntaxKind.COLON_TOKEN.stringValue() + Constants.CONNECTION_SERVICE) == 0) {
-//                TcpConnectionServiceValidator serviceValidator = new TcpConnectionServiceValidator(ctx,
-//                        modulePrefix + SyntaxKind.COLON_TOKEN.stringValue());
-//                serviceValidator.validate();
-//                break;
-//            }
-//        }
+        ClassDefinitionNode classDefinitionNode = (ClassDefinitionNode) ctx.node();
+        List<Node> typeReferenceNodes = classDefinitionNode.members()
+                .stream().filter(member -> member.kind() == SyntaxKind.TYPE_REFERENCE).collect(Collectors.toList());
 
-        TcpConnectionServiceValidator serviceValidator = new TcpConnectionServiceValidator(ctx,
-                modulePrefix + SyntaxKind.COLON_TOKEN.stringValue());
-        serviceValidator.validate();
+        for (Node node : typeReferenceNodes) {
+            if (Utils.equals(((TypeReferenceNode) node).typeName().toSourceCode(),
+                    modulePrefix + SyntaxKind.COLON_TOKEN.stringValue() + Constants.CONNECTION_SERVICE)) {
+                TcpConnectionServiceValidator serviceValidator = new TcpConnectionServiceValidator(ctx,
+                        modulePrefix + SyntaxKind.COLON_TOKEN.stringValue());
+                serviceValidator.validate();
+                return;
+            }
+        }
     }
 
     private String getPrefix(SyntaxNodeAnalysisContext ctx) {

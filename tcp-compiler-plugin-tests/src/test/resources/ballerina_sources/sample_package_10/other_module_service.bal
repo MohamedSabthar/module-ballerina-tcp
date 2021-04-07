@@ -1,4 +1,5 @@
 import sample_10.module;
+import ballerina/tcp;
 
 service on new module:Listener() {
     remote function onConnect() returns module:ConnectionService {
@@ -7,5 +8,5 @@ service on new module:Listener() {
 }
 
 service class HelloService {
-
+    *tcp:ConnectionService;
 }
