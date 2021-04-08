@@ -39,9 +39,11 @@ import java.util.Optional;
  * Class to Validate TCP ConnectionServices.
  */
 public class TcpConnectionServiceValidator {
+
     private FunctionDefinitionNode onCloseFunctionNode;
     private FunctionDefinitionNode onBytesFunctionNode;
     private FunctionDefinitionNode onErrorFunctionNode;
+    private final ClassDefinitionNode classDefinitionNode;
     private final String modulePrefix;
     private final SyntaxNodeAnalysisContext ctx;
 
@@ -80,13 +82,13 @@ public class TcpConnectionServiceValidator {
     public static final String NIL = "()";
 
     public TcpConnectionServiceValidator(SyntaxNodeAnalysisContext syntaxNodeAnalysisContext,
-                                         String modulePrefixOrModuleName) {
+                                         String modulePrefixOrModuleName, ClassDefinitionNode classDefinitionNode) {
         ctx = syntaxNodeAnalysisContext;
         modulePrefix = modulePrefixOrModuleName;
+        this.classDefinitionNode = classDefinitionNode;
     }
 
     public void validate() {
-        ClassDefinitionNode classDefinitionNode = (ClassDefinitionNode) ctx.node();
         classDefinitionNode.members().stream()
                 .filter(child -> child.kind() == SyntaxKind.OBJECT_METHOD_DEFINITION
                         || child.kind() == SyntaxKind.RESOURCE_ACCESSOR_DEFINITION).forEach(node -> {

@@ -18,7 +18,14 @@
 
 package io.ballerina.stdlib.tcp.compiler;
 
+import io.ballerina.compiler.api.symbols.TypeReferenceTypeSymbol;
+import io.ballerina.compiler.syntax.tree.ClassDefinitionNode;
+import io.ballerina.compiler.syntax.tree.ExplicitNewExpressionNode;
+import io.ballerina.compiler.syntax.tree.ExpressionNode;
 import io.ballerina.compiler.syntax.tree.FunctionDefinitionNode;
+import io.ballerina.compiler.syntax.tree.ImportDeclarationNode;
+import io.ballerina.compiler.syntax.tree.ModulePartNode;
+import io.ballerina.compiler.syntax.tree.ReturnStatementNode;
 import io.ballerina.compiler.syntax.tree.ServiceDeclarationNode;
 import io.ballerina.compiler.syntax.tree.SyntaxKind;
 import io.ballerina.projects.plugins.SyntaxNodeAnalysisContext;
@@ -26,6 +33,8 @@ import io.ballerina.tools.diagnostics.DiagnosticFactory;
 import io.ballerina.tools.diagnostics.DiagnosticInfo;
 import io.ballerina.tools.diagnostics.DiagnosticSeverity;
 import org.ballerinalang.stdlib.tcp.Constants;
+
+import java.io.PrintStream;
 
 /**
  * Class to Validate TCP services.
@@ -49,6 +58,48 @@ public class TcpServiceValidator {
             String functionName = functionDefinitionNode.functionName().toString();
             if (Utils.hasRemoteKeyword(functionDefinitionNode) && !Utils.equals(functionName, Constants.ON_CONNECT)) {
                 reportInvalidFunction(functionDefinitionNode);
+            } else if (Utils.equals(functionName, Constants.ON_CONNECT)) {
+
+                ReturnStatementNodeVisitor returnStatementNodeVisitor = new ReturnStatementNodeVisitor();
+                functionDefinitionNode.accept(returnStatementNodeVisitor);
+
+                // iterate the return statements and handle
+                // (1) return new HelloService();
+                // (2) service = new HelloService(); return service;
+                // (3) return functionThatReturnsAConnectionService();
+
+                for (ReturnStatementNode returnStatementNode : returnStatementNodeVisitor.getReturnStatementNodes()) {
+                    ExpressionNode expressionNode = returnStatementNode.expression().get();
+                    TypeReferenceTypeSymbol typeReferenceTypeSymbol;
+
+                    //(1) return new HelloService();
+                    if (expressionNode instanceof ExplicitNewExpressionNode) {
+                        typeReferenceTypeSymbol = (TypeReferenceTypeSymbol) ctx.semanticModel()
+                                .symbol(expressionNode).get();
+                        String serviceClassName = typeReferenceTypeSymbol.typeDescriptor().getName().get();
+                        // problems
+                        //1. Node visitor only visits the node in single bal file
+                        ConnectionServiceClassVisitor connectionServiceClassVisitor =
+                                new ConnectionServiceClassVisitor(serviceClassName);
+                        ctx.syntaxTree().rootNode().accept(connectionServiceClassVisitor);
+                        ClassDefinitionNode classDefinitionNode =
+                                connectionServiceClassVisitor.getClassDefinitionNode();
+                        // 2. couldn't find a way to get the prefix if the module imported as alias
+                        // (.ie) `import ballerina/tcp as t;` prefix -> t
+                        String prefix = getPrefix(ctx); // this is wrong because,
+                        // getPrefix() only get the prefix from current file if
+                        // ConnectionService class defined in another file it may can have different prefix.
+                        if (classDefinitionNode == null) {
+                            PrintStream console = System.out;
+                            console.println("class not found");
+                        } else {
+                            TcpConnectionServiceValidator tcpConnectionServiceValidator =
+                                    new TcpConnectionServiceValidator(ctx, prefix, classDefinitionNode);
+                            tcpConnectionServiceValidator.validate();
+                        }
+                    }
+                    // handle (2,3)
+                }
             }
         });
     }
@@ -58,5 +109,19 @@ public class TcpServiceValidator {
                 DiagnosticSeverity.ERROR);
         ctx.reportDiagnostic(DiagnosticFactory.createDiagnostic(diagnosticInfo,
                 functionDefinitionNode.location(), functionDefinitionNode.functionName().toString()));
+    }
+
+    private String getPrefix(SyntaxNodeAnalysisContext ctx) {
+        ModulePartNode modulePartNode = ctx.syntaxTree().rootNode();
+        for (ImportDeclarationNode importDeclaration : modulePartNode.imports()) {
+            if (Utils.equals(importDeclaration.moduleName().get(0).toString().stripTrailing(), (Constants.TCP))) {
+                if (importDeclaration.prefix().isPresent()) {
+                    return importDeclaration.prefix().get().children().get(1).toString()
+                            + SyntaxKind.COLON_TOKEN.stringValue();
+                }
+                break;
+            }
+        }
+        return Constants.TCP + SyntaxKind.COLON_TOKEN.stringValue();
     }
 }
