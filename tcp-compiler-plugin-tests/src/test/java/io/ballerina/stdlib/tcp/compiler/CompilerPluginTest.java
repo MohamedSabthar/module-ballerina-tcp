@@ -134,6 +134,11 @@ public class CompilerPluginTest {
         PackageCompilation compilation = currentPackage.getCompilation();
         DiagnosticResult diagnosticResult = compilation.diagnosticResult();
         Assert.assertEquals(diagnosticResult.diagnostics().size(), 0);
+
+        currentPackage = loadPackage("sample_package_15");
+        compilation = currentPackage.getCompilation();
+        diagnosticResult = compilation.diagnosticResult();
+        Assert.assertEquals(diagnosticResult.diagnostics().size(), 0);
     }
 
     @Test
